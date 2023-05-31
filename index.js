@@ -221,7 +221,7 @@ const stringSession = new StringSession(session);
   if (commits.total != 0) {
     var changelog = "_Pending updates:_\n\n";
     for (var i in commits.all){
-      changelog += `${(parseInt(i)+1)}• *${commits.all[i].message}*\n`
+      changelog += `${(parseInt(i)+1)}• **${commits.all[i].message}**\n`
     }
     changelog+=`\n_Use ".update start" to start the update_`
     await client.sendMessage('me', { message: changelog });

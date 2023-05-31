@@ -9,7 +9,7 @@ Module(
         var commits = await git.log(['main' + '..origin/' + 'main']);
         var mss = '';
         if (commits.total === 0) {
-            mss = "*Bot up to date!*"
+            mss = "**Bot up to date!**"
             return await m.send(mss);
         }
 
@@ -23,7 +23,7 @@ Module(
         else {
             var changelog = "_Pending updates:_\n\n";
             for (var i in commits.all){
-            changelog += `${(parseInt(i)+1)}• *${commits.all[i].message}*\n`
+            changelog += `${(parseInt(i)+1)}• **${commits.all[i].message}**\n`
             }
         }
 
