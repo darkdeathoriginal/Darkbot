@@ -4,6 +4,8 @@ const { NewMessage } = require('telegram/events');
 const { CustomFile } = require("telegram/client/uploads");
 const input = require('input')
 const fs = require('fs');
+const simpleGit = require('simple-git');
+const git = simpleGit();
 require('dotenv').config();
 const modules = [];
 class AddCmd {
@@ -214,6 +216,17 @@ const stringSession = new StringSession(session);
   }
   console.log('Bot is ready.');
   await client.sendMessage('me', { message: 'Bot has been started..' });
+  var commits = await git.log(['main' + '..origin/' + 'main']);
+  var mss = '';
+  if (commits.total != 0) {
+    var changelog = "_Pending updates:_\n\n";
+    for (var i in commits.all){
+      changelog += `${(parseInt(i)+1)}• *${commits.all[i].message}*\n`
+    }
+    changelog+=`\n_Use ".update start" to start the update_`
+    await client.sendMessage('me', { message: changelog });
+  }
+
 
   
   
