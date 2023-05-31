@@ -5,18 +5,6 @@ const axios = require("axios");
 const fs = require("fs");
 const {FancyRandom} = require("./utils/fancy");
 
-Module(
-  { pattern: "test ?(.*)", fromMe: true, desc: "Test command", use: "utility" },
-  async (m, match) => {
-    // Handle start command logic here
-    const sender = await m.message.getSender();
-    let a = match[1] || "";
-    console.log(sender);
-    await m.client.sendMessage(m.message.peerId, {
-      message: `test\n${a}`,
-    });
-  }
-);
 
 Module(
   {
@@ -121,10 +109,9 @@ Module(
       ids: id, // the id of the message you want to download
     });
     const media = result[0];
-    console.log(result[0].media);
     if (media) {
       const buffer = await m.client.downloadMedia(media, {
-        workers: 12,
+        workers: 14,
       });
       if (result[0].media.photo) {
         await fs.writeFileSync("./temp/temp.jpeg", buffer);
@@ -222,14 +209,4 @@ Module(
     }
   }
 );
-Module(
-  { pattern: "search ?(.*)", fromMe: true, desc: "Start command", use: "utility" },
-  async (m, match) => {
-    let a = await fs.readFileSync("./temp/pp.jpeg")
-    const result = new CustomFile("test.png",a.length,"",a)
-    await m.client.sendFile("me", {file: result,forceDocument:true})
 
-
-  console.log(result);
-  }
-);
