@@ -1,0 +1,22 @@
+{
+  "name": "darkbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "pm2 start index.js --attach"
+  },
+  "keywords": [],
+  "author": "darkdeath",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12",
+    "dotenv": "^16.1.2",
+    "image-to-pdf": "^2.0.0",
+    "input": "^1.0.1",
+    "pm2": "^5.3.0",
+    "telegram": "^2.17.4"
+  }
+}
