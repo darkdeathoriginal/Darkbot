@@ -50,17 +50,9 @@ class AddCmd {
       );
       const photo = data.photos[0]
       const bufff = photo.fileReference
-      return await client.downloadFile(
-        new Api.InputPhotoFileLocation({
-          id: photo.id,
-          accessHash: photo.accessHash.value,
-          fileReference: bufff,
-          thumbSize: 'c',
-        }),
-        {
-          dcId: photo.dcId,
-        },
-      )
+      return await client.downloadMedia(photo, {
+        workers: 12,
+      })
       }
       catch(e){
         return false

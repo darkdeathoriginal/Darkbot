@@ -29,8 +29,8 @@ Module(
     
     const bufferData = await m.getProfilePic(a.users[0].username);
     if (bufferData) {
-      await fs.writeFileSync("./temp/pp.jpeg", bufferData);
-      await m.client.sendFile(m.message.peerId, { file: "./temp/pp.jpeg" });
+
+      await m.sendMessage(m.jid,{image:bufferData})
     } else {
       await m.client.sendMessage(m.message.peerId, {
         message: "Profile picture not found",
@@ -114,12 +114,10 @@ Module(
         workers: 14,
       });
       if (result[0].media.photo) {
-        await fs.writeFileSync("./temp/temp.jpeg", buffer);
-        await m.client.sendFile("me", { file: "./temp/temp.jpeg" });
+        await m.sendMessage(m.jid,{image:buffer})
       }
       if (result[0].media.document) {
-        await fs.writeFileSync("./temp/temp.mp4", buffer);
-        await m.client.sendFile("me", { file: "./temp/temp.mp4" });
+        await m.sendMessage(m.jid,{video:buffer})
       }
     }
   }
