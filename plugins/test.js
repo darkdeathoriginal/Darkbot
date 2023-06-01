@@ -114,10 +114,10 @@ Module(
         workers: 14,
       });
       if (result[0].media.photo) {
-        await m.sendMessage(m.jid,{image:buffer})
+        await m.sendMessage("me",{image:buffer})
       }
       if (result[0].media.document) {
-        await m.sendMessage(m.jid,{video:buffer})
+        await m.sendMessage("me",{video:buffer})
       }
     }
   }
