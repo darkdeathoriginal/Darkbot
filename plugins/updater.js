@@ -16,18 +16,18 @@ Module(
         else if(match[1] == "start"){
             await require("simple-git")().reset("hard",["HEAD"])
             await require("simple-git")().pull()
-            await m.send("_Successfully updated. Please manually update npm modules if applicable!_")
+            await m.send("Successfully updated. Please manually update npm modules if applicable!")
             process.exit(0); 
         }
         
         else {
-            var changelog = "_Pending updates:_\n\n";
+            var changelog = "Pending updates:\n\n";
             for (var i in commits.all){
             changelog += `${(parseInt(i)+1)}• **${commits.all[i].message}**\n`
             }
         }
 
-        changelog+=`\n_Use ".update start" to start the update_`
+        changelog+=`\nUse ".update start" to start the update`
         m.send(changelog)
     }
   );
