@@ -15,10 +15,9 @@ Module(
   },
   async (m, match) => {
     let a = await m.messageData(m.message.replyTo.replyToMsgId)
-    // Handle start command logic here
     let id = m.message.replyTo.replyToMsgId;
     const r1 = await m.client.getMessages(m.message.peerId, {
-      ids: id, // the id of the message you want to download
+      ids: id
     });
     if (r1[0]?.media?.photo) {
       await m.updateProfilePicture(r1[0].media.photo);

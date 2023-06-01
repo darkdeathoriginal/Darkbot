@@ -5,6 +5,7 @@ const { CustomFile } = require("telegram/client/uploads");
 const input = require('input')
 const fs = require('fs');
 const simpleGit = require('simple-git');
+const { error } = require('console');
 const git = simpleGit();
 require('dotenv').config();
 const modules = [];
@@ -55,7 +56,7 @@ class AddCmd {
       })
       }
       catch(e){
-        return false
+        return e
       }
     }
     newMessage.getUsername = async(id)=>{
@@ -145,7 +146,7 @@ class AddCmd {
         console.log("invalid format")
       }
       }catch(e){
-        return e
+        throw(e)
       }
     }
 
