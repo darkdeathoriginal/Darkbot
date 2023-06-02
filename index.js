@@ -111,7 +111,7 @@ class AddCmd {
       if (r1[0]?.media?.photo) {
         await client.invoke(
           new Api.channels.EditPhoto({
-            channel: "darkbot122",
+            channel: await newMessage.getUsername(),
             photo: r1[0].media.photo
           })
         );
