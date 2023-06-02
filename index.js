@@ -59,15 +59,12 @@ class AddCmd {
         return e
       }
     }
-    newMessage.getUsername = async(id)=>{
-      try{const result = await client.invoke(
-        new Api.users.GetUsers({
-          id: [id],
-        })
-        );
-        return result[0].username}
+    newMessage.getUsername = async(id =message.peerId )=>{
+      try{
+        return (await client.getEntity(id)).username
+        }
         catch(e){
-          return false
+          throw(e)
         }
       
     }
@@ -104,6 +101,36 @@ class AddCmd {
         message: text,
       })
       return a
+    }
+    newMessage.updatGroupImage = async(id)=>{
+      try{
+      const r1 = await m.client.getMessages(message.peerId, {
+        ids: id
+      });
+      let a = await m.client.getEntity(message.peerId);
+      if (r1[0]?.media?.photo) {
+        await m.client.invoke(
+          new Api.channels.EditPhoto({
+            channel: "darkbot122",
+            photo: r1[0].media.photo
+          })
+        );
+      }
+      }catch(e){
+        throw(e)
+      }
+    }
+    newMessage.changeGroupTitle = async(username,text)=>{
+      try{
+        await m.client.invoke(
+          new Api.channels.EditTitle({
+            channel: username,
+            title: text,
+          })
+        );
+      }catch(e){
+        throw(e)
+      }
     }
     newMessage.jid = message.peerId
     newMessage.quoted =await message.replyTo || {}

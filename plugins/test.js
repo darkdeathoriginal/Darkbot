@@ -207,15 +207,3 @@ Module(
   }
 );
 
-Module(
-  {
-    pattern: "gpp ?(.*)",
-    fromMe: true,
-    desc: "restarts the bot",
-    use: "utility",
-  },
-  async (m, match) => {
-    const buffer = await m.client.downloadProfilePhoto(m.jid,{isBig:true})
-    await m.sendMessage(m.jid,{image:buffer})
-  }
-);
