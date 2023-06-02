@@ -104,12 +104,12 @@ class AddCmd {
     }
     newMessage.updatGroupImage = async(id)=>{
       try{
-      const r1 = await m.client.getMessages(message.peerId, {
+      const r1 = await client.getMessages(message.peerId, {
         ids: id
       });
-      let a = await m.client.getEntity(message.peerId);
+      let a = await client.getEntity(message.peerId);
       if (r1[0]?.media?.photo) {
-        await m.client.invoke(
+        await client.invoke(
           new Api.channels.EditPhoto({
             channel: "darkbot122",
             photo: r1[0].media.photo
@@ -122,7 +122,7 @@ class AddCmd {
     }
     newMessage.changeGroupTitle = async(username,text)=>{
       try{
-        await m.client.invoke(
+        await client.invoke(
           new Api.channels.EditTitle({
             channel: username,
             title: text,
