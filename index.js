@@ -203,7 +203,7 @@ function Module(moduleConfig, callback) {
 const apiId = Number(process.env.API_ID);
 const apiHash = process.env.API_HASH;
 const session = process.env.SESSION?process.env.SESSION:""
-const stringSession = new StringSession(session);
+const stringSession = new StringSession(session||"");
 
 (async () => {
   console.log('Bot is starting...');
