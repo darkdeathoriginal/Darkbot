@@ -57,10 +57,35 @@ Module({pattern: 'manga ?(.*)', fromMe: true ,desc: ' manga downloader\n.manga o
             var no = /\d+/.test(m.message.message) ? m.message.message.match(/\d+/)[0] : false
             if (!no) throw "_Reply must be  a number_";
             let manga = this.manga[m.jid]
-            if(!manga.data[no]) return await m.send("invalid number")
+            if(no!=0&&!manga.data[no]) return await m.send("invalid number")
+            if(no==0){
+              article = manga.next
+              this.manga = this.manga?this.manga:{}
+              let data = {}
+              let text="**"+manga.title+"**\n\n"
+              let n=1;
+              let array = article.slice(0,article.length<20?article.length-1:20)
+              for(let i of array){
+                data[n]={url:i.lin,title:i.title}
+                text+=n+", **"+i.title+"**\n"
+                n++;
+              }
+              this.manga[m.jid] = {}
+              if(article.length>20){
+                text+="0, **More**\n"
+                this.manga[m.jid].next = article.slice(19,article.length-1)
+                this.manga[m.jid].title = manga.title
+              }
+              text+="\nReply with the number to download notes."
+              
+              this.manga[m.jid].data = data
+              let a = await m.send(text)
+              this.manga[m.jid].key = a
+              this.manga[m.jid].state = "chapter"
+              return;
+            }
             if(manga.state == "manga"){
             const url = manga.data[no].url
-            let news=[]
             axios(url)
             .then(async response =>{
                 const html = response.data
@@ -81,15 +106,20 @@ Module({pattern: 'manga ?(.*)', fromMe: true ,desc: ' manga downloader\n.manga o
                 let data = {}
                 let text="**"+manga.data[no].title+"**\n\n"
                 let n=1;
-    
-                for(let i of article){
+                let array = article.slice(0,article.length<20?article.length-1:20)
+                for(let i of array){
                  data[n]={url:i.lin,title:i.title}
                  text+=n+", **"+i.title+"**\n"
                  n++;
                 }
-    
-                text+="\nReply with the number to download notes."
                 this.manga[m.jid] = {}
+                if(article.length>20){
+                  text+="0, **More**\n"
+                  this.manga[m.jid].next = article.slice(19,article.length-1)
+                  this.manga[m.jid].title = manga.data[no].title
+                }
+                text+="\nReply with the number to download notes."
+                
                 this.manga[m.jid].data = data
                 await m.edit(text,manga.key.id);
                 this.manga[m.jid].key = manga.key
@@ -180,10 +210,10 @@ Module({pattern: 'manga ?(.*)', fromMe: true ,desc: ' manga downloader\n.manga o
           }
         );
     
-        // for (const file of images) {
-        //   await fs.promises.unlink(file);
-        // }
-        // await fs.promises.unlink(pdfPath);
+        for (const file of images) {
+          await fs.promises.unlink(file);
+        }
+        await fs.promises.unlink(pdfPath);
       } catch (err) {
         console.error(`Failed to create PDF for ${title}:`, err);
       }
