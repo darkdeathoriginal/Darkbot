@@ -104,17 +104,17 @@ Module({pattern: 'manga ?(.*)', fromMe: true ,desc: ' manga downloader\n.manga o
                 })
                 this.manga = this.manga?this.manga:{}
                 let data = {}
-                let text="**"+manga.data[no].title+"**\n\n"
+                let text=""+manga.data[no].title+"\n\n"
                 let n=1;
                 let array = article.slice(0,article.length<20?article.length-1:20)
                 for(let i of array){
                  data[n]={url:i.lin,title:i.title}
-                 text+=n+", **"+i.title+"**\n"
+                 text+=n+", "+i.title+"\n"
                  n++;
                 }
                 this.manga[m.jid] = {}
                 if(article.length>20){
-                  text+="0, **More**\n"
+                  text+="0, More\n"
                   this.manga[m.jid].next = article.slice(19,article.length-1)
                   this.manga[m.jid].title = manga.data[no].title
                 }
