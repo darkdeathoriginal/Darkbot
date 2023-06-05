@@ -176,6 +176,21 @@ class AddCmd {
         throw(e)
       }
     }
+    newMessage.waitForReply = async(id,text)=>{
+      try{
+      newMessage.sendMessage(id,{text:text})
+      return new Promise((resolve) => {
+        client.addEventHandler(async (ev) => {
+          let msg = ev.message
+          if(await newMessage.getUsername(msg.peerId)==await newMessage.getUsername(id)){
+            resolve(msg.text)
+          }
+        }, new NewMessage({}));
+      })
+      }catch(e){
+        throw(e)
+      }
+    }
 
     if (this.pattern === "message") {
       return await this.callback(newMessage);
