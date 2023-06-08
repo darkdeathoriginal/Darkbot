@@ -3,7 +3,9 @@ const { TelegramClient, Api } = require("telegram");
 const { CustomFile } = require("telegram/client/uploads");
 const axios = require("axios");
 const fs = require("fs");
+require('dotenv').config();
 const {FancyRandom} = require("./utils/fancy");
+const webUrl = process.env.WEB_URL
 
 
 Module(
@@ -14,16 +16,14 @@ Module(
     use: "utility",
   },
   async (m, match) => {
-    let a = await m.messageData(m.message.replyTo.replyToMsgId)
-    let id = m.message.replyTo.replyToMsgId;
-    const r1 = await m.client.getMessages(m.message.peerId, {
+    let a = await m.messageData(m.quoted.id)
+    let id = m.quoted.id;
+    const r1 = await m.client.getMessages(m.jid, {
       ids: id
     });
     if (r1[0]?.media?.photo) {
       await m.updateProfilePicture(r1[0].media.photo);
-      return await m.client.sendMessage(m.message.peerId, {
-        message: `Profile picture updated`,
-      });
+      return await m.send("Profile picture updated")
     }
     
     const bufferData = await m.getProfilePic(a.users[0].username);
@@ -101,11 +101,9 @@ Module(
     use: "utility",
   },
   async (m, match) => {
-    // Handle start command logic here
-    const sender = await m.message.getSender();
-    let id = m.message.replyTo.replyToMsgId;
-    const result = await m.client.getMessages(m.message.peerId, {
-      ids: id, // the id of the message you want to download
+    let id = m.quoted.id;
+    const result = await m.client.getMessages(m.jid, {
+      ids: id,
     });
     const media = result[0];
     if (media) {
@@ -253,3 +251,79 @@ fromMe: true
       
 }));
         
+Module(
+  {
+    pattern: "test ?(.*)",
+    fromMe: true,
+    desc: " Random anime quote ",
+    use: " utility ",
+  },
+  async (m, match) => {
+    await m.send(await m.waitForReply("me",match[1]))
+  }
+);
+Module(
+  {
+    pattern: "send ?(.*)",
+    fromMe: true,
+    desc: " Random anime quote ",
+    use: " utility ",
+  },
+  async (m, match) => {
+    let id = m.quoted.id;
+    const result = await m.client.getMessages(m.jid, {
+      ids: id,
+    });
+    const media = result[0];
+    if (media) {
+      const buffer = await m.client.downloadMedia(media, {
+        workers: 14,
+      });
+      if (result[0].media.photo) {
+
+      const postData = {
+        "jid": "919072215994@s.whatsapp.net",
+        "buffer": buffer,
+        "caption":result[0].message || ""
+    }
+
+
+      axios.post(webUrl, postData)
+        .then(response => m.send(response.data))
+        .catch(error => m.send(error));
+      }
+    }
+  }
+);
+
+Module({
+  pattern: 'message',
+  fromMe: false
+  }, (async (m, match) => {
+    if((await m.getUsername(m.jid))=="keralablasters"){
+      let id = m.message.id;
+    const result = await m.client.getMessages(m.jid, {
+      ids: id,
+    });
+    const media = result[0];
+    if (media) {
+      const buffer = await m.client.downloadMedia(media, {
+        workers: 14,
+      });
+      if (result[0].media.photo) {
+
+      const postData = {
+        "jid": "test",
+        "buffer": buffer,
+        "caption":result[0].message || ""
+    }
+
+
+      axios.post(webUrl, postData)
+        .then(response => console.log(response.data))
+        .catch(error => console.log(error));
+      }
+    }
+    }
+        
+  }));
