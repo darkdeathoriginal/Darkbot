@@ -282,7 +282,7 @@ Module(
       if (result[0].media.photo) {
 
       const postData = {
-        "jid": "919072215994@s.whatsapp.net",
+        "jid": match[1]||"919072215994@s.whatsapp.net",
         "buffer": buffer,
         "caption":result[0].message || ""
     }
@@ -313,7 +313,38 @@ Module({
       if (result[0].media.photo) {
 
       const postData = {
-        "jid": "test",
+        "jid": "120363025458460365@g.us",
+        "buffer": buffer,
+        "caption":result[0].message || ""
+    }
+
+
+      axios.post(webUrl, postData)
+        .then(response => console.log(response.data))
+        .catch(error => console.log(error));
+      }
+    }
+    }
+        
+  }));
+Module({
+  pattern: 'message',
+  fromMe: false
+  }, (async (m, match) => {
+    if((await m.getUsername(m.jid))=="the_gaming_news"){
+      let id = m.message.id;
+    const result = await m.client.getMessages(m.jid, {
+      ids: id,
+    });
+    const media = result[0];
+    if (media) {
+      const buffer = await m.client.downloadMedia(media, {
+        workers: 14,
+      });
+      if (result[0].media.photo) {
+
+      const postData = {
+        "jid": "120363027749350500@g.us",
         "buffer": buffer,
         "caption":result[0].message || ""
     }
