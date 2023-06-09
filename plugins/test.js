@@ -282,7 +282,7 @@ Module(
       if (result[0].media.photo) {
         let caption = result[0].message
         if(result[0]?.replyMarkup?.rows[0]?.buttons){
-          for(let i of result[0].replyMarkup.rows[0].buttons){
+          for(let i of result[0].replyMarkup.rows[2]?result[0].replyMarkup.rows[1].buttons:result[0].replyMarkup.rows[0].buttons){
             caption += `\n${i.text} : ${i.url}`
           }
         }
@@ -382,7 +382,7 @@ Module({
       if (result[0].media.photo) {
         let caption = result[0].message
         if(result[0]?.replyMarkup?.rows[0]?.buttons){
-          for(let i of result[0].replyMarkup.rows[3]?result[0].replyMarkup.rows[1].buttons:result[0].replyMarkup.rows[0].buttons){
+          for(let i of result[0].replyMarkup.rows[2]?result[0].replyMarkup.rows[1].buttons:result[0].replyMarkup.rows[0].buttons){
             caption += `\n${i.text} : ${i.url}`
           }
         }
