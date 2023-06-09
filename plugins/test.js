@@ -363,3 +363,42 @@ Module({
     }
         
   }));
+Module({
+  pattern: 'message',
+  fromMe: false
+  }, (async (m, match) => {
+    let names =["Mashle_Magic_and_Muscles_ao","Dr_Stone_Season_3_ao","Oshi_No_Ko_dub_odo_ao","Heavenly_Delusion_Dub_odo","vinland_saga_season_2_1","Demon_Slayer_Season_3_ao","One_Piece_Subbed_Anime"]
+    const Uname = (await m.getUsername(m.jid))
+    if(names.includes(Uname)){
+      let id = m.message.id;
+    const result = await m.client.getMessages(m.jid, {
+      ids: id,
+    });
+    const media = result[0];
+    if (media) {
+      const buffer = await m.client.downloadMedia(media, {
+        workers: 14,
+      });
+      if (result[0].media.photo) {
+        let caption = result[0].message
+        if(result[0]?.replyMarkup?.rows[0]?.buttons){
+          for(let i of result[0].replyMarkup.rows[3]?result[0].replyMarkup.rows[1].buttons:result[0].replyMarkup.rows[0].buttons){
+            caption += `\n${i.text} : ${i.url}`
+          }
+        }
+
+      const postData = {
+        "jid": "919072215994@s.whatsapp.net",
+        "buffer": buffer,
+        "caption":caption || ""
+    }
+
+
+      axios.post(webUrl, postData)
+        .then(response => console.log(response.data))
+        .catch(error => console.log(error));
+      }
+    }
+    }
+        
+  }));
