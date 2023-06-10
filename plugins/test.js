@@ -72,11 +72,11 @@ Module(
 Module(
   { pattern: "dl", fromMe: true, desc: "Downloads file", use: "utility" },
   async (m, match) => {
-    // Handle start command logic here
-    const sender = await m.message.getSender();
-    let id = m.message.replyTo.replyToMsgId;
-    const result = await m.client.getMessages(m.message.peerId, {
-      ids: id, // the id of the message you want to download
+
+
+    let id = m.quoted.id;
+    const result = await m.client.getMessages(m.jid, {
+      ids: id, 
     });
     const media = result[0];
     console.log(result[0].media);
@@ -127,14 +127,12 @@ Module(
     use: " utility ",
   },
   async (m, match) => {
-    let url = "https://animechan.vercel.app/api/random";
+    let url = "https://kyoko.rei.my.id/api/quotes.php";
 
     let json = (await axios(url)).data;
-    let anime = json.character;
-    let quote = json.quote;
-    await m.client.sendMessage(m.message.peerId, {
-      message: `${quote}\n؜${anime}-`,
-    });
+    let anime = json.apiResult[0].character;
+    let quote = json.apiResult[0].english
+    await m.send(`${quote}\n؜${anime}-`);
   }
 );
 Module(
