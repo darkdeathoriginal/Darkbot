@@ -50,7 +50,7 @@ Module(
               return { from: e.dataValues.from, to: e.dataValues.to };
             });
           for(let i of array){
-              a+=`from: ${i.from}\nto: ${i.to}`
+              a+=`from: ${i.from}\nto: ${i.to}\n\n`
           }
           return await m.send(a)
       }
