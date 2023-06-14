@@ -365,7 +365,7 @@ Module({
   pattern: 'message',
   fromMe: false
   }, (async (m, match) => {
-    let names =["Mashle_Magic_and_Muscles_ao","Dr_Stone_Season_3_ao","Oshi_No_Ko_dub_odo_ao","Heavenly_Delusion_Dub_odo","vinland_saga_season_2_1","Demon_Slayer_Season_3_ao","One_Piece_Subbed_Anime"]
+    let names =["Mashle_Magic_and_Muscles_ao","Dr_Stone_Season_3_ao","Oshi_no_Ko2","Heavenly_Delusion_Dub_odo","vinland_saga_season_2_1","Demon_Slayer_Season_3_ao","One_Piece_Subbed_Anime"]
     const Uname = (await m.getUsername(m.jid))
     if(names.includes(Uname)){
       let id = m.message.id;
