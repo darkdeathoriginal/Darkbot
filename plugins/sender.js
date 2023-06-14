@@ -44,13 +44,26 @@ Module(
     },
     async (m, match) => {
         await chatDb.sync();
+        if(match[1]=="get"){
+          let a = ''
+          let array = (await chatDb.findAll()).map((e) => {
+              return { from: e.dataValues.from, to: e.dataValues.to };
+            });
+          for(let i of array){
+              a+=`from: ${i.from}\nto: ${i.to}`
+          }
+          return await m.send(a)
+      }
         let a = await m.waitForReply(m.jid,"Send the username of the chat you want to forward messages from.")
         let b = await m.waitForReply(m.jid,"Send the Jid of the chat you want to forward messages to.")
         await createTable(a,b)
         m.send('succesfully set sender')
     }
   );
-
+  Module({ pattern: 'del ?(.*)', fromMe: true, desc: 'Ping command', use: 'utility' }, async (m,match) => {
+    const from =match[1]
+    await deleteTable(from).then(m.send("succesfully deleted.."))
+})
   Module({
     pattern: 'message',
     fromMe: false

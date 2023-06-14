@@ -5,7 +5,6 @@ const { CustomFile } = require("telegram/client/uploads");
 const input = require('input')
 const fs = require('fs');
 const simpleGit = require('simple-git');
-const { error } = require('console');
 const git = simpleGit();
 require('dotenv').config();
 const modules = [];
