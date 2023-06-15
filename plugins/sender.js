@@ -83,7 +83,7 @@ Module(
             const buffer = await m.client.downloadMedia(media, {
               workers: 14,
             });
-            if (result[0].media.photo) {
+            if (result[0]?.media?.photo) {
       
             const postData = {
               "jid": i.to,
