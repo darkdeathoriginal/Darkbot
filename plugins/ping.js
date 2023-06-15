@@ -11,8 +11,13 @@ Module({ pattern: 'ping', fromMe: true, desc: 'Ping command', use: 'utility' }, 
     });
 })
 Module({ pattern: 'id', fromMe: true, desc: 'Id command', use: 'utility' }, async (m,match) => {
-    // Handle start command logic here
-    const sender = await m.message.getSender()
-    console.log(await m.message);
-    console.log(sender);
+
+    if(m.quoted.id){
+      let id = Number((await m.messageData(m.quoted.id)).users[0].id.value)
+      let username = await m.getUsername(id)
+      return await m.send(`ID of ${username} is ${id}`)
+    }
+    let id = Number(m.jid.userId.value)
+    let username = await m.getUsername(id)
+    return await m.send(`ID of ${username} is ${id}`)
 })
