@@ -3,7 +3,7 @@ const simpleGit = require('simple-git');
 const git = simpleGit();
 
 Module(
-    { pattern: "update ?(.*)", fromMe: true, desc: "Test command", use: "utility" },
+    { pattern: "update ?(.*)", fromMe: true, desc: "Update command", use: "utility" },
     async (m, match) => {
         await git.fetch();
         var commits = await git.log(['main' + '..origin/' + 'main']);

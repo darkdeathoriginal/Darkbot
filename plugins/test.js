@@ -206,7 +206,7 @@ Module(
   {
     pattern: "search ?(.*)",
     fromMe: true,
-    desc: " Random anime quote ",
+    desc: " Telegram file searcher ",
     use: " utility ",
   },
   async (m, match) => {
@@ -253,7 +253,7 @@ Module(
   {
     pattern: "test ?(.*)",
     fromMe: true,
-    desc: " Random anime quote ",
+    desc: " Test plugin ",
     use: " utility ",
   },
   async (m, match) => {
@@ -264,7 +264,7 @@ Module(
   {
     pattern: "send ?(.*)",
     fromMe: true,
-    desc: " Random anime quote ",
+    desc: " telegram to whatsapp image sender ",
     use: " utility ",
   },
   async (m, match) => {
