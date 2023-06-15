@@ -8,6 +8,7 @@ Module(
       use: "utility",
     },
     async (m, match) => {
+      if(m.message.replyTo){
       let id = m.message.replyTo.replyToMsgId;
       const r1 = await m.client.getMessages(m.jid, {
         ids: id
@@ -15,7 +16,7 @@ Module(
       if (r1[0]?.media?.photo) {
         await m.updatGroupImage(id)
         return await m.send("Profile picture updated")
-      }
+      }}
       const buffer = await m.client.downloadProfilePhoto(m.jid,{isBig:true})
       await m.sendMessage(m.jid,{image:buffer})
     }
