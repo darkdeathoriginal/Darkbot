@@ -60,7 +60,7 @@ Module(
         m.send('succesfully set sender')
     }
   );
-  Module({ pattern: 'del ?(.*)', fromMe: true, desc: 'Ping command', use: 'utility' }, async (m,match) => {
+  Module({ pattern: 'del ?(.*)', fromMe: true, desc: 'Sender deleter', use: 'utility' }, async (m,match) => {
     const from =match[1]
     await deleteTable(from).then(m.send("succesfully deleted.."))
 })
