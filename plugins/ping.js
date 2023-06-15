@@ -17,7 +17,7 @@ Module({ pattern: 'id', fromMe: true, desc: 'Id command', use: 'utility' }, asyn
       let username = await m.getUsername(id)
       return await m.send(`ID of ${username} is ${id}`)
     }
-    let id = Number(m.jid.userId.value||m.jid.channelId.value)
+    let id = Number(m.jid?.userId?.value||m.jid.channelId.value)
     let username = await m.getUsername(id)
     return await m.send(`ID of ${username} is ${id}`)
 })
