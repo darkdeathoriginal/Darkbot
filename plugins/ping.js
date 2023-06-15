@@ -13,7 +13,7 @@ Module({ pattern: 'ping', fromMe: true, desc: 'Ping command', use: 'utility' }, 
 Module({ pattern: 'id', fromMe: true, desc: 'Id command', use: 'utility' }, async (m,match) => {
 
     if(m.quoted.id){
-      let id = Number((await m.messageData(m.quoted.id)).users[0].id.value)
+      let id = Number((await m.client.getMessages(m.jid, {ids:m.quoted.id}))[0].fromId.userId.value)
       let username = await m.getUsername(id)
       return await m.send(`ID of ${username} is ${id}`)
     }

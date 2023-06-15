@@ -16,7 +16,6 @@ Module(
     use: "utility",
   },
   async (m, match) => {
-    let a = await m.messageData(m.quoted.id)
     let id = m.quoted.id;
     const r1 = await m.client.getMessages(m.jid, {
       ids: id
@@ -25,8 +24,8 @@ Module(
       await m.updateProfilePicture(r1[0].media.photo);
       return await m.send("Profile picture updated")
     }
-    
-    const bufferData = await m.getProfilePic(a.users[0].username);
+    let a =(await m.client.getMessages(m.jid, {ids:m.quoted.id}))[0].fromId.userId
+    const bufferData = await m.client.downloadProfilePhoto(a,{isBig:true})
     if (bufferData) {
 
       await m.sendMessage(m.jid,{image:bufferData})
