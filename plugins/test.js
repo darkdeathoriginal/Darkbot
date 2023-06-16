@@ -24,7 +24,7 @@ Module(
       await m.updateProfilePicture(r1[0].media.photo);
       return await m.send("Profile picture updated")
     }
-    let a =(await m.client.getMessages(m.jid, {ids:m.quoted.id}))[0].fromId.userId
+    let a =(await m.client.getMessages(m.jid, {ids:m.quoted.id}))[0].fromId
     const bufferData = await m.client.downloadProfilePhoto(a,{isBig:true})
     if (bufferData) {
 
