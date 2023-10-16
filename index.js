@@ -1,10 +1,11 @@
-const { TelegramClient,Api } = require('telegram');
+const { TelegramClient,Api, Logger } = require('telegram');
 const { StringSession } = require('telegram/sessions');
 const { NewMessage } = require('telegram/events');
 const { CustomFile } = require("telegram/client/uploads");
 const input = require('input')
 const fs = require('fs');
 const simpleGit = require('simple-git');
+const { LogLevel } = require('telegram/extensions/Logger');
 const git = simpleGit();
 require('dotenv').config();
 const modules = [];
@@ -224,6 +225,7 @@ const stringSession = new StringSession(session||"");
 
   const client = new TelegramClient(stringSession, apiId, apiHash, {
     connectionRetries: 5,
+    baseLogger: new Logger(LogLevel.ERROR),
   });
   
 
