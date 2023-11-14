@@ -8,8 +8,9 @@ Module(
     use: "utility",
   },
   async (m, match) => {
-    if (m.quoted?.id) {
-      let id = m.quoted.id;
+    if (m.quoted) {
+      const quoted = await m.getQuoted();
+      let id = quoted.id;
       const r1 = await m.client.getMessages(m.jid, {
         ids: id,
       });

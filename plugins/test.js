@@ -15,11 +15,11 @@ Module(
     use: "utility",
   },
   async (m, match) => {
-    console.log(m.quoted);
-    let id = m.quoted?.id;
-    if (!id) {
+    if (!m.quoted) {
       return await m.send("Reply to a message to get the profile picture");
     }
+    const quoted = await m.getQuoted();
+    let id = quoted?.id;
 
     const r1 = await m.client.getMessages(m.jid, {
       ids: id,
@@ -28,7 +28,7 @@ Module(
       await m.updateProfilePicture(r1[0].media.photo);
       return await m.send("Profile picture updated");
     }
-    let a = (await m.client.getMessages(m.jid, { ids: m.quoted.id }))[0];
+    let a = (await m.client.getMessages(m.jid, { ids: quoted.id }))[0];
     const bufferData = await m.client.downloadProfilePhoto(
       a.fromId ? a.fromId : a.peerId,
       { isBig: true }
@@ -76,7 +76,8 @@ Module(
 Module(
   { pattern: "dl", fromMe: true, desc: "Downloads file", use: "utility" },
   async (m, match) => {
-    let id = m.quoted.id;
+    const quoted = await m.getQuoted();
+    let id = quoted.id;
     const result = await m.client.getMessages(m.jid, {
       ids: id,
     });
@@ -102,7 +103,8 @@ Module(
     use: "utility",
   },
   async (m, match) => {
-    let id = m.quoted.id;
+    const quoted = await m.getQuoted();
+    let id = quoted.id;
     const result = await m.client.getMessages(m.jid, {
       ids: id,
     });
@@ -241,10 +243,10 @@ Module(
     fromMe: true,
   },
   async (m, match) => {
+    if(!m.quoted)return
     if (
-      !m.quoted ||
       !this.search ||
-      this.search[m.jid]?.key.id != m?.quoted?.id
+      this.search[m.jid]?.key.id != quoted?.id
     )
       return;
     var no = /\d+/.test(m.message.message)

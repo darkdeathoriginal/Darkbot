@@ -62,7 +62,9 @@ Module(
     fromMe: true,
   },
   async (m, match) => {
-    if (!m.quoted || !this.manga || this.manga[m.jid]?.key.id != m?.quoted?.id)
+    if(!m.quoted)return
+    const quoted = await m.getQuoted();
+    if (!this.manga || this.manga[m.jid]?.key.id != quoted?.id)
       return;
     var no = /\d+/.test(m.message) ? m.message.match(/\d+/)[0] : false;
     if (!no) throw "_Reply must be  a number_";

@@ -30,8 +30,7 @@ const stringSession = new StringSession(session || "");
   });
 
   client.addEventHandler(async (event) => {
-    let test = new Message(client);
-    await test._patch(event.message, client);
+    let test = new Message(client,event.message);
     const message = event.message.message;
     const sender = await event.message.getSender();
 
