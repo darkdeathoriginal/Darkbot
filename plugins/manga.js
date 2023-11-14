@@ -2,7 +2,7 @@ const { Module } = require("../index");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const fs = require("fs");
-
+let deleteMessage
 Module(
   {
     pattern: "manga ?(.*)",
@@ -66,6 +66,7 @@ Module(
       return;
     var no = /\d+/.test(m.message) ? m.message.match(/\d+/)[0] : false;
     if (!no) throw "_Reply must be  a number_";
+    m.delete()
     let manga = this.manga[m.jid];
     if (no != 0 && !manga.data[no]) return await m.send("invalid number");
     if (no == 0) {
@@ -142,7 +143,7 @@ Module(
       });
     }
     if (manga.state == "chapter") {
-      m.send("please wait...");
+      deleteMessage = await m.send("please wait...");
       const url = manga.data[no].url;
       axios(url).then(async (response) => {
         const html = response.data;
@@ -215,7 +216,7 @@ async function pdf(m, title) {
     });
 
     const pdfData = await fs.promises.readFile(pdfPath);
-
+    deleteMessage.delete();
     await m.client.send(m.jid, {
       document: pdfData,
       fileName: `${title}.pdf`,

@@ -33,19 +33,26 @@ const stringSession = new StringSession(session || "");
     let test = new Message(client);
     await test._patch(event.message, client);
     const message = event.message.message;
+    const sender = await event.message.getSender();
+
     if (message) {
       for (const module of modules) {
-        const regex = new RegExp(`^\\.\\s*${module.pattern}`);
+        if(!module.fromMe&&sender.self){
+          const regex = new RegExp(`^\\.\\s*${module.pattern}`);
         const match = message.match(regex);
 
         if (match) {
           module.callback(test, match);
         }
+        }
+        
       }
     }
     for (const module of modules) {
       if (module.pattern == "message") {
-        module.callback(test);
+        if(!module.fromMe&&sender.self){
+          module.callback(test);
+        }
       }
     }
   }, new NewMessage({}));
