@@ -37,10 +37,9 @@ const stringSession = new StringSession(session || "");
 
     if (message) {
       for (const module of modules) {
-        if(!module.fromMe&&sender.self){
+        if((module.fromMe&&sender.self)||!module.fromMe){
           const regex = new RegExp(`^\\.\\s*${module.pattern}`);
-        const match = message.match(regex);
-
+          const match = message.match(regex);
         if (match) {
           module.callback(test, match);
         }
@@ -50,7 +49,7 @@ const stringSession = new StringSession(session || "");
     }
     for (const module of modules) {
       if (module.pattern == "message") {
-        if(!module.fromMe&&sender.self){
+        if((module.fromMe&&sender.self)||!module.fromMe){
           module.callback(test);
         }
       }
