@@ -19,26 +19,11 @@ Module(
       return await m.send("Reply to a message to get the profile picture");
     }
     const quoted = await m.getQuoted();
-    let id = quoted?.id;
-
-    const r1 = await m.client.getMessages(m.jid, {
-      ids: id,
-    });
-    if (r1[0]?.media?.photo) {
-      await m.updateProfilePicture(r1[0].media.photo);
-      return await m.send("Profile picture updated");
-    }
-    let a = (await m.client.getMessages(m.jid, { ids: quoted.id }))[0];
-    const bufferData = await m.client.downloadProfilePhoto(
-      a.fromId ? a.fromId : a.peerId,
-      { isBig: true }
-    );
-    if (bufferData) {
-      await m.client.send(m.jid, { image: bufferData });
-    } else {
-      await m.client.sendMessage(m.message.peerId, {
-        message: "Profile picture not found",
-      });
+    const photos = await m.client.getUserProfilePhotos(quoted.userId);
+    for(let photo of photos){
+      await m.client.sendMessage(m.jid, {
+        file:photo,
+    })
     }
   }
 );
