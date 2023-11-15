@@ -4,7 +4,7 @@ const { createBot } = require("../../lib/createClient");
 const Message = require("../../lib/Message");
 const { NewMessage } = require("telegram/events");
 const { Api } = require("telegram");
-
+const { getSudo } = require("../../config");
 
 class Bot {
   constructor(apiId, apiHash, BOT_TOKEN, name) {
@@ -15,26 +15,40 @@ class Bot {
     this.modules = [];
   }
   async init() {
-      console.log(`${this.name} is starting...`);
+    console.log(`${this.name} is starting...`);
     await BotDb.sync();
     let session = "";
     const bot = await BotDb.findOne({ where: { token: this.BOT_TOKEN } });
     if (bot) session = bot.session;
     const stringSession = new StringSession(session);
 
-    this.client = await createBot(this.apiId, this.apiHash, this.BOT_TOKEN, stringSession);
+    this.client = await createBot(
+      this.apiId,
+      this.apiHash,
+      this.BOT_TOKEN,
+      stringSession
+    );
     await this.setCommands();
-    console.log(`${this.name} is started!`);
+    console.log(`${this.name} started!`);
     session = this.client.session.save();
-    if (!bot) this.saveSession(BOT_TOKEN, session);
+    if (!bot) this.saveSession(this.BOT_TOKEN, session);
     this.client.addEventHandler(async (event) => {
       let test = new Message(this.client, event.message);
       for (let i of this.modules) {
-        const regex = new RegExp(`^\/\\s*${i.pattern} ?(.*)`);
-        const match = event.message?.message?.match(regex);
+        if (i.pattern && ((i.sudo && getSudo() == test.jid) || !i.sudo)) {
+          const regex = new RegExp(`^\/\\s*${i.pattern} ?(.*)`);
+          const match = event.message?.message?.match(regex);
 
-        if (match) {
-          i.callback(test, match);
+          if (match) {
+            i.callback(test, match, this);
+          }
+        }
+        if (
+          i.on &&
+          i.on == "message" &&
+          ((i.sudo && getSudo() == test.jid) || !i.sudo)
+        ) {
+          i.callback(test, [], this);
         }
       }
     }, new NewMessage({}));
@@ -45,19 +59,23 @@ class Bot {
   async saveSession(token, session) {
     await BotDb.create({ token, session });
   }
-  async setCommands(){
-    const commands = []
-    for(let i of this.modules){
-        commands.push(new Api.BotCommand({
-            command:i.pattern,
-            description:i.description || ""
-        }))
+  async setCommands() {
+    const commands = [];
+    for (let i of this.modules) {
+      if (i.pattern && i.description) {
+        commands.push(
+          new Api.BotCommand({
+            command: i.pattern,
+            description: i.description,
+          })
+        );
+      }
     }
     await this.client.invoke(
       new Api.bots.SetBotCommands({
         scope: new Api.BotCommandScopeDefault(),
         langCode: "en",
-        commands
+        commands,
       })
     );
   }
