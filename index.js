@@ -1,4 +1,4 @@
-const {  Logger } = require("telegram");
+const { Logger } = require("telegram");
 const { StringSession } = require("telegram/sessions");
 const { NewMessage } = require("telegram/events");
 const input = require("input");
@@ -9,7 +9,7 @@ const Message = require("./lib/Message");
 const { createClient } = require("./lib/createClient");
 const git = simpleGit();
 require("dotenv").config();
-const {apiId,apiHash,session} = require("./config")
+const { apiId, apiHash, session, setSudo } = require("./config");
 
 const modules = [];
 
@@ -27,25 +27,24 @@ const stringSession = new StringSession(session || "");
   });
 
   client.addEventHandler(async (event) => {
-    let test = new Message(client,event.message);
+    let test = new Message(client, event.message);
     const message = event.message.message;
     const sender = await event.message.getSender();
 
     if (message) {
       for (const module of modules) {
-        if((module.fromMe&&sender.self)||!module.fromMe){
+        if ((module.fromMe && sender.self) || !module.fromMe) {
           const regex = new RegExp(`^\\.\\s*${module.pattern}`);
           const match = message.match(regex);
-        if (match) {
-          module.callback(test, match);
+          if (match) {
+            module.callback(test, match);
+          }
         }
-        }
-        
       }
     }
     for (const module of modules) {
       if (module.pattern == "message") {
-        if((module.fromMe&&sender.self)||!module.fromMe){
+        if ((module.fromMe && sender.self) || !module.fromMe) {
           module.callback(test);
         }
       }
@@ -64,7 +63,9 @@ const stringSession = new StringSession(session || "");
     fs.writeFileSync(".env", file);
   }
   console.log("Bot is ready.");
-  require("./bot/index")
+  const me = await client.getMe();
+  setSudo(me.id);
+  require("./bot/index");
   await client.sendMessage("me", { message: "Bot has been started.." });
   var commits = await git.log(["main" + "..origin/" + "main"]);
   var mss = "";
