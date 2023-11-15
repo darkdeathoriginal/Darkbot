@@ -30,6 +30,11 @@ class Bot {
     );
     await this.setCommands();
     console.log(`${this.name} started!`);
+    try {
+      this.client.send(getSudo(),{text:`${this.name} started!`})
+    } catch (error) {
+      console.log(error);
+    }
     session = this.client.session.save();
     if (!bot) this.saveSession(this.BOT_TOKEN, session);
     this.client.addEventHandler(async (event) => {
