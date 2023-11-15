@@ -9,16 +9,13 @@ const Message = require("./lib/Message");
 const { createClient } = require("./lib/createClient");
 const git = simpleGit();
 require("dotenv").config();
+const {apiId,apiHash,session} = require("./config")
 
 const modules = [];
 
 function Module(moduleConfig, callback) {
   modules.push({ ...moduleConfig, callback });
 }
-
-const apiId = Number(process.env.API_ID);
-const apiHash = process.env.API_HASH;
-const session = process.env.SESSION ? process.env.SESSION : "";
 const stringSession = new StringSession(session || "");
 
 (async () => {
@@ -67,6 +64,7 @@ const stringSession = new StringSession(session || "");
     fs.writeFileSync(".env", file);
   }
   console.log("Bot is ready.");
+  require("./bot/index")
   await client.sendMessage("me", { message: "Bot has been started.." });
   var commits = await git.log(["main" + "..origin/" + "main"]);
   var mss = "";
