@@ -11,6 +11,7 @@ module.exports ={
     session : process.env.SESSION ? process.env.SESSION : "",
     BOT_TOKEN:process.env.BOT_TOKEN,
     sudo:this.sudo,
+    DEVELOPMENT:process.env.STATE === undefined ? false : process.env.STATE,    
     setSudo:function(s) {
         this.sudo = s;
     },

@@ -4,7 +4,7 @@ const { createBot } = require("../../lib/createClient");
 const Message = require("../../lib/Message");
 const { NewMessage } = require("telegram/events");
 const { Api } = require("telegram");
-const { getSudo } = require("../../config");
+const { getSudo, DEVELOPMENT } = require("../../config");
 const {apiId,apiHash} = require("../../config")
 
 class Bot {
@@ -30,7 +30,7 @@ class Bot {
     await this.setCommands();
     console.log(`${this.name} started!`);
     try {
-      this.client.send(getSudo(),{text:`${this.name} started!`})
+      if(!DEVELOPMENT) this.client.send(getSudo(),{text:`${this.name} started!`})
     } catch (error) {
       console.log(error);
     }
