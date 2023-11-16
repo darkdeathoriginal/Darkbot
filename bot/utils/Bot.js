@@ -5,11 +5,10 @@ const Message = require("../../lib/Message");
 const { NewMessage } = require("telegram/events");
 const { Api } = require("telegram");
 const { getSudo } = require("../../config");
+const {apiId,apiHash} = require("../../config")
 
 class Bot {
-  constructor(apiId, apiHash, BOT_TOKEN, name) {
-    this.apiId = apiId;
-    this.apiHash = apiHash;
+  constructor(BOT_TOKEN, name) {
     this.BOT_TOKEN = BOT_TOKEN;
     this.name = name;
     this.modules = [];
@@ -23,8 +22,8 @@ class Bot {
     const stringSession = new StringSession(session);
 
     this.client = await createBot(
-      this.apiId,
-      this.apiHash,
+      apiId,
+      apiHash,
       this.BOT_TOKEN,
       stringSession
     );

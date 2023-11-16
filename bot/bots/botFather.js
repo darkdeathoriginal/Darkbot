@@ -1,5 +1,5 @@
 const { botHandler } = require("../handler");
-const { apiId, apiHash, BOT_TOKEN } = require("../../config");
+const { BOT_TOKEN } = require("../../config");
 const { startCommand, pingCommand } = require("../utils/defaultCommands");
 const axios = require("axios");
 const fs = require("fs");
@@ -9,8 +9,6 @@ let state = false;
 let token;
 botHandler({
   name: "BotFather",
-  apiId,
-  apiHash,
   BOT_TOKEN,
   commands: [
     pingCommand,
