@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "pm2 start index.js --attach"
+    "start": "pm2 start index.js --attach",
+    "dev":"nodemon index.js"
   },
   "keywords": [],
   "author": "darkdeath",
