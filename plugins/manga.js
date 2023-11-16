@@ -58,7 +58,7 @@ Module(
 
 Module(
   {
-    pattern: "message",
+    on: "message",
     fromMe: true,
   },
   async (m, match) => {

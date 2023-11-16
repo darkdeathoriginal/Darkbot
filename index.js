@@ -43,10 +43,8 @@ const stringSession = new StringSession(session || "");
       }
     }
     for (const module of modules) {
-      if (module.pattern == "message") {
-        if ((module.fromMe && sender.self) || !module.fromMe) {
-          module.callback(test);
-        }
+      if (module.on && module.on == "message" && ((module.fromMe && sender.self) || !module.fromMe)) {
+        module.callback(test);
       }
     }
   }, new NewMessage({}));

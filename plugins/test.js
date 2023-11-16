@@ -147,7 +147,7 @@ Module(
   }
 );
 Module(
-  { pattern: "message", fromMe: true, desc: "Start command", use: "utility" },
+  { on: "message", fromMe: true, desc: "Start command", use: "utility" },
   async (m, match) => {
     if (
       this.scrambled &&
@@ -163,7 +163,7 @@ Module(
   }
 );
 Module(
-  { pattern: "message", fromMe: true, desc: "Start command", use: "utility" },
+  { on: "message", fromMe: true, desc: "Start command", use: "utility" },
   async (m, match) => {
     let text = m.message;
     if (text.startsWith(">")) {
@@ -224,7 +224,7 @@ Module(
 
 Module(
   {
-    pattern: "message",
+    on: "message",
     fromMe: true,
   },
   async (m, match) => {
