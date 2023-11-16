@@ -7,6 +7,7 @@ const ExternalBotDb = require("../../modals/externalBot");
 
 let state = false;
 let token;
+let timeout
 botHandler({
   name: "BotFather",
   BOT_TOKEN,
@@ -19,6 +20,7 @@ botHandler({
       sudo: true,
       callback: async (m, match) => {
         state = "token";
+        timeout = setTimeout(timeoutMessage, 30000, m)
         await m.send("Send me a bot token");
       },
     },
@@ -27,6 +29,8 @@ botHandler({
       sudo: true,
       callback: async (m, match) => {
         if (!state || m.message === "/addbot") return;
+        clearTimeout(timeout)
+        timeout = setTimeout(timeoutMessage, 30000, m)
         if (state == "token") {
           state = "link";
           token = m.message;
@@ -138,3 +142,8 @@ botHandler({
     },
   ],
 });
+
+async function timeoutMessage(m){
+  await m.send("Time out");
+  state = false;
+}
