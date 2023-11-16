@@ -140,6 +140,32 @@ botHandler({
         await m.send("Send bot name");
       },
     },
+    {
+      on: "message",
+      sudo: true,
+      callback: async (m) => {
+        let text = m.message;
+        if (text.startsWith("<")) {
+          const util = require("util");
+          try {
+            let return_val = await eval(
+              `(async () => { ${text.replace("<", "")} })()`
+            );
+            if (return_val && typeof return_val !== "string")
+              return_val = util.inspect(return_val);
+            if (return_val) {
+              await m.client.sendMessage(m.jid, {
+                message: return_val || "no return value",
+              });
+            }
+          } catch (e) {
+            await m.client.sendMessage(m.jid, {
+              message: util.format(e),
+            });
+          }
+        }
+      },
+    },
   ],
 });
 
