@@ -20,7 +20,7 @@ botHandler({
       sudo: true,
       callback: async (m, match) => {
         state = "token";
-        timeout = setTimeout(timeoutMessage, 30000, m)
+        timeout = setTimeout(timeoutMessage, 60000, m)
         await m.send("Send me a bot token");
       },
     },
@@ -30,10 +30,10 @@ botHandler({
       callback: async (m, match) => {
         if (!state || m.message === "/addbot") return;
         clearTimeout(timeout)
-        timeout = setTimeout(timeoutMessage, 30000, m)
         if (state == "token") {
           state = "link";
           token = m.message;
+          timeout = setTimeout(timeoutMessage, 60000, m)
           return await m.send("Send bot gist url");
         }
         if (state == "remove") {
@@ -87,7 +87,7 @@ botHandler({
             var plugin_name_temp = response.data.match(/name: ["'](.*)["'],/g)
               ? response.data
                   .match(/name: ["'](.*)["'],/g)
-                  .map((e) =>
+                  ?.map((e) =>
                     e.replace("pattern", "").replace(/[^a-zA-Z]/g, "")
                   )
               : "temp";
@@ -109,15 +109,15 @@ botHandler({
                 ? plugin_name_temp.join(", ")
                 : plugin_name;
             try {
-              require("./" + plugin_name);
+              require(__dirname + "/" + plugin_name);
             } catch (e) {
               fs.unlinkSync(__dirname + "/" + plugin_name + ".js");
               return await m.send("Error in plugin\n" + e);
             }
-            await m.send(plugin_name_temp + " installed.");
+            await m.send(plugin_name + " installed.");
             await ExternalBotDb.create({
               url: url,
-              name: plugin_name_temp,
+              name: plugin_name,
             });
           }
           return;
