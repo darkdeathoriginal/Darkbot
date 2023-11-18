@@ -29,6 +29,9 @@ class Bot {
     );
     await this.setCommands();
     console.log(`${this.name} started!`);
+    for(let module of this.modules){
+      if(module.on && module.on == "start" && module.callback) module.callback(this.client)
+    }
     try {
       if(!DEVELOPMENT) this.client.send(getSudo(),{text:`${this.name} started!`})
     } catch (error) {
@@ -66,7 +69,7 @@ class Bot {
   async setCommands() {
     const commands = [];
     for (let i of this.modules) {
-      if (i.pattern && i.description) {
+      if (i.pattern && i.description&& !i.dontAdd) {
         commands.push(
           new Api.BotCommand({
             command: i.pattern,

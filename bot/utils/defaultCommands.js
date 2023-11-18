@@ -4,7 +4,7 @@ const startCommand = {
   callback: async (message, match, obj) => {
     let msg = "Bot is started!\n\nBot commands:\n";
     for (let i of obj.modules) {
-      if(i.pattern && i.description){
+      if(i.pattern && i.description && !i.dontAdd){
         msg += `/${i.pattern} - ${i.description}\n`;
       }
     }
