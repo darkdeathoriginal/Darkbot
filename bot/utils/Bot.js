@@ -2,10 +2,12 @@ const { StringSession } = require("telegram/sessions");
 const BotDb = require("../../modals/bot");
 const { createBot } = require("../../lib/createClient");
 const Message = require("../../lib/Message");
-const { NewMessage } = require("telegram/events");
+const { NewMessage} = require("telegram/events");
+const { CallbackQuery } = require("telegram/events/CallbackQuery");
 const { Api } = require("telegram");
 const { getSudo, DEVELOPMENT } = require("../../config");
-const {apiId,apiHash} = require("../../config")
+const {apiId,apiHash} = require("../../config");
+const { Callback } = require("./Callback");
 
 class Bot {
   constructor(BOT_TOKEN, name) {
@@ -59,6 +61,14 @@ class Bot {
         }
       }
     }, new NewMessage({}));
+    this.client.addEventHandler(async (event) => {
+      const callback = new Callback(this.client,event.query);
+      for(let module of this.modules){
+        if(module.on && module.on == "callback_query" && module.callback){
+          module.callback(callback, this.client)
+        }
+      }
+    }, new CallbackQuery({}));
   }
   addCommand(command) {
     this.modules.push(command);
