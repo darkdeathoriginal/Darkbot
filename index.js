@@ -6,7 +6,7 @@ const fs = require("fs");
 const simpleGit = require("simple-git");
 const { LogLevel } = require("telegram/extensions/Logger");
 const Message = require("./lib/Message");
-const { createClient } = require("./lib/createClient");
+const {CreateClient } = require("./lib/createClient");
 const git = simpleGit();
 require("dotenv").config();
 const { apiId, apiHash, session, setSudo } = require("./config");
@@ -21,7 +21,7 @@ const stringSession = new StringSession(session || "");
 (async () => {
   console.log("Bot is starting...");
 
-  const client = createClient(stringSession, apiId, apiHash, {
+  const client = new CreateClient(stringSession, apiId, apiHash, {
     connectionRetries: 5,
     baseLogger: new Logger(LogLevel.ERROR),
   });
