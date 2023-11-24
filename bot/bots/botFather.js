@@ -1,13 +1,16 @@
 const { botHandler } = require("../handler");
 const { BOT_TOKEN } = require("../../config");
-const { startCommand, pingCommand } = require("../utils/defaultCommands");
+const { bots } = require("../handler");
+const {  startCommand,  pingCommand,} = require("../utils/defaultCommands");
 const axios = require("axios");
 const fs = require("fs");
 const ExternalBotDb = require("../../modals/externalBot");
+const { ButtonBuilder } = require("../utils/buttonBuilder");
+const { Button } = require("telegram/tl/custom/button");
 
 let state = false;
 let token;
-let timeout
+let timeout;
 botHandler({
   name: "BotFather",
   BOT_TOKEN,
@@ -20,7 +23,7 @@ botHandler({
       sudo: true,
       callback: async (m, match) => {
         state = "token";
-        timeout = setTimeout(timeoutMessage, 60000, m)
+        timeout = setTimeout(timeoutMessage, 60000, m);
         await m.send("Send me a bot token");
       },
     },
@@ -29,33 +32,12 @@ botHandler({
       sudo: true,
       callback: async (m, match) => {
         if (!state || m.message === "/addbot") return;
-        clearTimeout(timeout)
+        clearTimeout(timeout);
         if (state == "token") {
           state = "link";
           token = m.message;
-          timeout = setTimeout(timeoutMessage, 60000, m)
+          timeout = setTimeout(timeoutMessage, 60000, m);
           return await m.send("Send bot gist url");
-        }
-        if (state == "remove") {
-          state = false;
-          await ExternalBotDb.sync();
-          const name = m.message;
-          var plugin = await ExternalBotDb.findAll({
-            where: {
-              name: name,
-            },
-          });
-          if (plugin.length < 1) {
-            return await m.send("plugin not found");
-          } else {
-            await plugin[0].destroy();
-            const Message = name + " removed succesfully";
-            await m.send(Message);
-            delete require.cache[
-              require.resolve(__dirname + "/" + name + ".js")
-            ];
-            fs.unlinkSync(__dirname + "/" + name + ".js");
-          }
         }
         if (state == "link") {
           await ExternalBotDb.sync();
@@ -109,7 +91,12 @@ botHandler({
                 ? plugin_name_temp.join(", ")
                 : plugin_name;
             try {
-              require(__dirname + "/" + plugin_name);
+              require("./" + plugin_name);
+              for(let i of bots){
+                if(i.name == plugin_name){
+                  await i.init()
+                }
+              }
             } catch (e) {
               fs.unlinkSync(__dirname + "/" + plugin_name + ".js");
               return await m.send("Error in plugin\n" + e);
@@ -132,12 +119,14 @@ botHandler({
         let bots = await ExternalBotDb.findAll();
         if (bots.length < 1) return await m.send("No External bots found");
         let msg = "Bots:\n";
+        const button = new ButtonBuilder()
         for (let bot of bots) {
-          msg += `${bot.name}\n`;
+          button.add(Button.inline(bot.name,Buffer.from("removebot-"+bot.name)));
         }
-        await m.send(msg);
-        state = "remove";
-        await m.send("Send bot name");
+        await m.client.sendMessage(m.jid, {
+          message: "Select bot to remove",
+          buttons: button.build(),
+        });
       },
     },
     {
@@ -164,12 +153,37 @@ botHandler({
             });
           }
         }
-      },
+      }
     },
+    {
+      on:"callback_query",
+      callback: async (m) => {
+        if(!m.query.startsWith("removebot-"))return
+        await m.answer()
+        const name = m.query.split("-")[1]
+        await ExternalBotDb.sync();
+        var plugin = await ExternalBotDb.findAll({
+          where: {
+            name: name,
+          },
+        });
+        if (plugin.length < 1) {
+          return await m.send("plugin not found");
+        } else {
+          await plugin[0].destroy();
+          const Message = name + " removed succesfully";
+          delete require.cache[
+            require.resolve(__dirname + "/" + name + ".js")
+          ];
+          await fs.unlinkSync(__dirname + "/" + name + ".js");
+          await m.send(Message);
+        }
+      }
+    }
   ],
 });
 
-async function timeoutMessage(m){
+async function timeoutMessage(m) {
   await m.send("Time out");
   state = false;
 }
