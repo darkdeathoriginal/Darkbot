@@ -1,7 +1,7 @@
 const { botHandler } = require("../handler");
 const { BOT_TOKEN } = require("../../config");
 const { bots } = require("../handler");
-const {  startCommand,  pingCommand,} = require("../utils/defaultCommands");
+const { startCommand, pingCommand } = require("../utils/defaultCommands");
 const axios = require("axios");
 const fs = require("fs");
 const ExternalBotDb = require("../../modals/externalBot");
@@ -25,6 +25,26 @@ botHandler({
         state = "token";
         timeout = setTimeout(timeoutMessage, 60000, m);
         await m.send("Send me a bot token");
+      },
+    },
+    {
+      pattern: "updatebot",
+      description: "update external bot",
+      sudo: true,
+      callback: async (m) => {
+        let bots = await ExternalBotDb.findAll();
+        if (bots.length < 1) return await m.send("No External bots found");
+        let msg = "Bots:\n";
+        const button = new ButtonBuilder();
+        for (let bot of bots) {
+          button.add(
+            Button.inline(bot.name, Buffer.from("updateBot-" + bot.name))
+          );
+        }
+        await m.client.sendMessage(m.jid, {
+          message: "Select bot to update",
+          buttons: button.build(),
+        });
       },
     },
     {
@@ -92,9 +112,9 @@ botHandler({
                 : plugin_name;
             try {
               require("./" + plugin_name);
-              for(let i of bots){
-                if(i.name == plugin_name){
-                  await i.init()
+              for (let i of bots) {
+                if (i.name == plugin_name) {
+                  await i.init();
                 }
               }
             } catch (e) {
@@ -105,6 +125,7 @@ botHandler({
             await ExternalBotDb.create({
               url: url,
               name: plugin_name,
+              token,
             });
           }
           return;
@@ -119,9 +140,11 @@ botHandler({
         let bots = await ExternalBotDb.findAll();
         if (bots.length < 1) return await m.send("No External bots found");
         let msg = "Bots:\n";
-        const button = new ButtonBuilder()
+        const button = new ButtonBuilder();
         for (let bot of bots) {
-          button.add(Button.inline(bot.name,Buffer.from("removebot-"+bot.name)));
+          button.add(
+            Button.inline(bot.name, Buffer.from("removebot-" + bot.name))
+          );
         }
         await m.client.sendMessage(m.jid, {
           message: "Select bot to remove",
@@ -153,33 +176,58 @@ botHandler({
             });
           }
         }
-      }
+      },
     },
     {
-      on:"callback_query",
+      on: "callback_query",
       callback: async (m) => {
-        if(!m.query.startsWith("removebot-"))return
-        await m.answer()
-        const name = m.query.split("-")[1]
-        await ExternalBotDb.sync();
-        var plugin = await ExternalBotDb.findAll({
-          where: {
-            name: name,
-          },
-        });
-        if (plugin.length < 1) {
-          return await m.send("plugin not found");
-        } else {
-          await plugin[0].destroy();
-          const Message = name + " removed succesfully";
-          delete require.cache[
-            require.resolve(__dirname + "/" + name + ".js")
-          ];
-          await fs.unlinkSync(__dirname + "/" + name + ".js");
-          await m.send(Message);
+        if (m.query.startsWith("removebot-")) {
+          await m.answer();
+          const name = m.query.split("-")[1];
+          await ExternalBotDb.sync();
+          var plugin = await ExternalBotDb.findAll({
+            where: {
+              name: name,
+            },
+          });
+          if (plugin.length < 1) {
+            return await m.send("plugin not found");
+          } else {
+            await plugin[0].destroy();
+            const Message = name + " removed succesfully";
+            delete require.cache[
+              require.resolve(__dirname + "/" + name + ".js")
+            ];
+            await fs.unlinkSync(__dirname + "/" + name + ".js");
+            await m.send(Message);
+            await m.send("Restarting bot...");
+            process.exit(1);
+          }
+          return;
         }
-      }
-    }
+        if(m.query.startsWith("updateBot-")){
+          await m.answer();
+          const name = m.query.split("-")[1];
+          await ExternalBotDb.sync();
+          var plugin = await ExternalBotDb.findAll({
+            where: {
+              name: name,
+            },
+          });
+          if (plugin.length < 1) {
+            return await m.send("plugin not found");
+          } else {
+            delete require.cache[
+              require.resolve(__dirname + "/" + name + ".js")
+            ];
+            await fs.unlinkSync(__dirname + "/" + name + ".js");
+            await m.send("updating...");
+            await m.send("Bot will be restarted");
+            process.exit(1);
+          }
+        }
+      },
+    },
   ],
 });
 

@@ -10,5 +10,9 @@ const ExternalBotDb = DATABASE.define("ExternalBot", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  token: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 });
 module.exports = ExternalBotDb;
