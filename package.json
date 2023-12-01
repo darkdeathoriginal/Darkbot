@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "pm2 start index.js --attach",
+    "start": "pm2 start . --attach --name Darkbot",
     "dev": "nodemon index.js"
   },
   "keywords": [],
@@ -22,6 +22,6 @@
     "sequelize": "^6.32.0",
     "simple-git": "^3.19.0",
     "sqlite3": "^5.1.6",
-    "telegram": "^2.17.4"
+    "telegram": "^2.19.8"
   }
 }
