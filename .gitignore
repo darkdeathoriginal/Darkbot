@@ -1,4 +1,4 @@
 node_modules
 .env
 bot.db
-dev-*.js
+dev-*
