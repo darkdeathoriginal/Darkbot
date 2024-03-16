@@ -1,5 +1,6 @@
 const { Api } = require("telegram");
 const Base = require("../../lib/Base");
+const { decompressText } = require("../../lib/helpers");
 
 class Callback extends Base {
   constructor(client, data) {
@@ -10,7 +11,7 @@ class Callback extends Base {
     this.id = data.msgId;
     this.jid = data.peer.userId;
     this.queryId = data.queryId;
-    this.query = data.data.toString();
+    this.query = decompressText(data.data);
     this.data = data;
   }
   async answer(options = {}) {
