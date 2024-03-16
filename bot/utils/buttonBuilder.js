@@ -1,5 +1,6 @@
 const {buildReplyMarkup} = require("telegram/client/buttons");
 const { Button } = require("telegram/tl/custom/button");
+const { compressText } = require("../../lib/helpers");
 class ButtonBuilder{
     constructor(){
         this.button = []
@@ -11,7 +12,7 @@ class ButtonBuilder{
         return buildReplyMarkup(this.button)
     }
     inline(title,data){
-        return Button.inline(title,Buffer.from(data))
+        return Button.inline(title,compressText(data))
     }
 
 }
