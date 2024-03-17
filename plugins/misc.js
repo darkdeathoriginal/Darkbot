@@ -50,7 +50,7 @@ Module(
     // Handle start command logic here
     text = "";
     for (let i of modules) {
-      if (i.pattern != "message") {
+      if (i.pattern&&i.pattern != "message") {
         text += i.pattern.split(" ?(.*)")[0] + "\n" + i.desc + "\n\n";
       }
     }
@@ -255,40 +255,3 @@ Module(
     await m.send(await m.waitForReply("me", match[1]));
   }
 );
-// Module(
-//   {
-//     pattern: "send ?(.*)",
-//     fromMe: true,
-//     desc: " telegram to whatsapp image sender ",
-//     use: " utility ",
-//   },
-//   async (m, match) => {
-//     let id = m.quoted.id;
-//     const result = await m.client.getMessages(m.jid, {
-//       ids: id,
-//     });
-//     const media = result[0];
-//     if (media) {
-//       const buffer = await m.client.downloadMedia(media, {
-//         workers: 14,
-//       });
-//       if (result[0].media.photo) {
-//         let caption = result[0].message
-//         if(result[0]?.replyMarkup?.rows[0]?.buttons){
-//           for(let i of result[0].replyMarkup.rows[2]?result[0].replyMarkup.rows[1].buttons:result[0].replyMarkup.rows[0].buttons){
-//             caption += `\n${i.text} : ${i.url}`
-//           }
-//         }
-//       const postData = {
-//         "jid": match[1]||"919072215994@s.whatsapp.net",
-//         "buffer": buffer,
-//         "caption":caption || ""
-//     }
-
-//       axios.post(webUrl, postData)
-//         .then(response => m.send(response.data))
-//         .catch(error => m.send(error));
-//       }
-//     }
-//   }
-// );
