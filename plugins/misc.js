@@ -5,7 +5,6 @@ const axios = require("axios");
 const fs = require("fs");
 require("dotenv").config();
 const { FancyRandom } = require("./utils/fancy");
-const webUrl = process.env.WEB_URL;
 
 Module(
   {
@@ -108,22 +107,6 @@ Module(
   }
 );
 Module(
-  {
-    pattern: "quote ?(.*)",
-    fromMe: true,
-    desc: " Random anime quote ",
-    use: " utility ",
-  },
-  async (m, match) => {
-    let url = "https://kyoko.rei.my.id/api/quotes.php";
-
-    let json = (await axios(url)).data;
-    let anime = json.apiResult[0].character;
-    let quote = json.apiResult[0].english;
-    await m.send(`${quote}\n؜${anime}-`);
-  }
-);
-Module(
   { pattern: "scrambled ?(.*)", fromMe: false, desc: "game", use: "utility" },
   async (m, match) => {
     this.scrambled = this.scrambled ? this.scrambled : {};
@@ -185,73 +168,5 @@ Module(
         });
       }
     }
-  }
-);
-Module(
-  {
-    pattern: "search ?(.*)",
-    fromMe: true,
-    desc: " Telegram file searcher ",
-    use: " utility ",
-  },
-  async (m, match) => {
-    const article = await m.client.inlineQuery(
-      "DSMultiFunctionalBot",
-      match[1]
-    );
-    this.search = this.search ? this.search : {};
-    let data = {};
-    let text = `showing result for ${match[1]}\n\n`;
-    let n = 1;
-    for (let i of article) {
-      if (i.result.document) {
-        data[n] = i.result.document;
-        text += n + ", " + i.result.title + "\n";
-        n++;
-      }
-    }
-    this.search[m.jid] = {};
-    if (article.length > 20) {
-      text += "0, More\n";
-      this.search[m.jid].next = article.slice(19, article.length - 1);
-    }
-    text += "\nReply with the number to get the file.";
-    this.search[m.jid].data = data;
-    let a = await m.send(text);
-    this.search[m.jid].key = a;
-  }
-);
-
-Module(
-  {
-    on: "message",
-    fromMe: true,
-  },
-  async (m, match) => {
-    if(!m.quoted)return
-    if (
-      !this.search ||
-      this.search[m.jid]?.key.id != quoted?.id
-    )
-      return;
-    var no = /\d+/.test(m.message.message)
-      ? m.message.message.match(/\d+/)[0]
-      : false;
-    if (!no) throw "_Reply must be  a number_";
-    let search = this.search[m.jid];
-    if (!search.data[no]) return await m.send("invalid number");
-    m.client.sendMessage(m.jid, { file: search.data[no] });
-  }
-);
-
-Module(
-  {
-    pattern: "test ?(.*)",
-    fromMe: true,
-    desc: " Test plugin ",
-    use: " utility ",
-  },
-  async (m, match) => {
-    await m.send(await m.waitForReply("me", match[1]));
   }
 );
