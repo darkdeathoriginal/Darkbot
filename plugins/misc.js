@@ -53,7 +53,7 @@ Module(
         text += i.pattern.split(" ?(.*)")[0] + "\n" + i.desc + "\n\n";
       }
     }
-    await m.edit(FancyRandom(text));
+    await m.edit({text:FancyRandom(text)});
   }
 );
 
