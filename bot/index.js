@@ -45,5 +45,6 @@ const axios = require("axios");
   });
   for (let bot of bots) {
     bot.init();
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
 })();
