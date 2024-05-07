@@ -2,7 +2,7 @@ const { StringSession } = require("telegram/sessions");
 const BotDb = require("../../modals/bot");
 const { createBot } = require("../../lib/createClient");
 const Message = require("../../lib/Message");
-const { NewMessage} = require("telegram/events");
+const { NewMessage, Raw} = require("telegram/events");
 const { CallbackQuery } = require("telegram/events/CallbackQuery");
 const { Api } = require("telegram");
 const { getSudo, DEVELOPMENT } = require("../../config");
@@ -69,6 +69,16 @@ class Bot {
         }
       }
     }, new CallbackQuery({}));
+    await this.client.getMe();
+    this.client.addEventHandler((event)=>{
+      if (event instanceof Api.UpdateBotInlineQuery) {
+        for(let module of this.modules){
+          if(module.on && module.on == "inline_query" && module.callback){
+            module.callback(event, this.client)
+          }
+        }
+      }
+    },new Raw({}))
   }
   addCommand(command) {
     this.modules.push(command);

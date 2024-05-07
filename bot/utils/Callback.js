@@ -8,8 +8,8 @@ class Callback extends Base {
     if (data) this._patch(data, client);
   }
   _patch(data, client) {
-    this.id = data.msgId;
-    this.jid = data.peer.userId;
+    this.id = data.msgId?.id || data.msgId;
+    this.jid = data.peer?.userId || data.userId;
     this.queryId = data.queryId;
     this.query = decompressText(data.data);
     this.data = data;
