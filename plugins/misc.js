@@ -148,7 +148,7 @@ Module(
 Module(
   { on: "message", fromMe: true, desc: "Start command", use: "utility" },
   async (m, match) => {
-    let text = m.message;
+    let text = m.data.text;
     if (text.startsWith(">")) {
       const util = require("util");
       try {
