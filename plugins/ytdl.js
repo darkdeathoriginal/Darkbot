@@ -40,8 +40,8 @@ Module(
     fromMe: true,
   },
   async (m, match) => {
-    m.quoted = await m.getQuoted();
-    if (!m.quoted || !this.ytdl || this.ytdl[m.jid]?.id != m.quoted.id) return;
+    const quoted = await m.getQuoted();
+    if (!quoted || !this.ytdl || this.ytdl[m.jid]?.id != quoted.id) return;
 
     let no = /\d+/.test(m.message) ? m.message.match(/\d+/)[0] : null;
     if (!no) throw "_Reply must be a number_";
