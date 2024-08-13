@@ -1,4 +1,5 @@
-const { Logger } = require("telegram");
+/// <reference path="./types.js" />
+const { Logger, TelegramClient } = require("telegram");
 const { StringSession } = require("telegram/sessions");
 const { NewMessage } = require("telegram/events");
 const input = require("input");
@@ -13,6 +14,10 @@ const { apiId, apiHash, session, setSudo } = require("./config");
 
 const modules = [];
 
+/**
+ * 
+ * @type {Module}
+ */
 function Module(moduleConfig, callback) {
   modules.push({ ...moduleConfig, callback });
 }

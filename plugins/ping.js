@@ -1,4 +1,3 @@
-const { message } = require("telegram/client");
 const { Module } = require("../index");
 Module(
   { pattern: "ping", fromMe: true, desc: "Ping command", use: "utility" },
