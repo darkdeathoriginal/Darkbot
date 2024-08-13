@@ -1,11 +1,12 @@
+const { message } = require("telegram/client");
 const { Module } = require("../index");
 Module(
   { pattern: "ping", fromMe: true, desc: "Ping command", use: "utility" },
   async (m, match) => {
     let start = new Date().getTime();
-    await m.send(`❮ ᴛᴇsᴛɪɴɢ ᴘɪɴɢ ❯`);
+    const a = await m.client.sendMessage(m.jid,{message:"❮ ᴛᴇsᴛɪɴɢ ᴘɪɴɢ ❯"})
     let end = new Date().getTime();
-    await m.send(`ʟᴀᴛᴇɴᴄʏ: ${end - start} ᴍs`);
+    return await m.client.editMessage(m.jid,{text:`ʟᴀᴛᴇɴᴄʏ: ${end - start} ᴍs`,message:a.id})
   }
 );
 Module(
