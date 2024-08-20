@@ -1,8 +1,7 @@
 const { Module } = require("../index");
 const fs = require("fs");
-const ytdl = require("ytdl-core");
+const ytdl = require("@distube/ytdl-core");
 const { avMix } = require("../lib/ffmpegHelpers");
-const { CreateClient } = require("../lib/createClient");
 
 Module(
   {
