@@ -3,3 +3,4 @@ node_modules
 bot.db
 dev-*
 temp/*
+package-lock.json
