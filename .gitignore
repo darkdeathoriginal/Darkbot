@@ -4,3 +4,5 @@ bot.db
 dev-*
 temp/*
 package-lock.json
+dist
+.vscode
