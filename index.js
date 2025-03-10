@@ -69,7 +69,12 @@ const stringSession = new StringSession(session || "");
   const me = await client.getMe();
   setSudo(me.id);
   require("./bot/index");
-  client.getDialogs();
+  await client.getDialogs();
+  for(const module of modules){
+    if(module.on && module.on == "start"){
+      module.callback(client);
+    }
+  }
   await client.sendMessage("me", { message: "Bot has been started.." });
   var commits = await git.log(["main" + "..origin/" + "main"]);
   var mss = "";
