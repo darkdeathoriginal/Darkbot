@@ -12,6 +12,7 @@
   "author": "darkdeath",
   "license": "ISC",
   "dependencies": {
+    "@distube/ytdl-core": "^4.14.4",
     "axios": "^1.4.0",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.1.2",
@@ -24,8 +25,7 @@
     "sharp": "^0.33.4",
     "simple-git": "^3.19.0",
     "sqlite3": "^5.1.6",
-    "telegram": "^2.19.8",
-    "@distube/ytdl-core": "^4.14.4"
+    "telegram": "^2.26.22"
   },
   "devDependencies": {
     "jest": "^29.7.0"
