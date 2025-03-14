@@ -131,7 +131,7 @@ module.exports = {
         console.log(e);
       }
 
-      fs.writeFileSync(__dirname + `/bots/${i.name}.js`, response.data);
+      fs.writeFileSync("./plugins/" + pluginName + ".js", response.data);
     }
   });
   const pluginFolder = "./plugins/";
