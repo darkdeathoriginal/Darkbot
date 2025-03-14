@@ -11,6 +11,7 @@ const {CreateClient } = require("./lib/createClient");
 const git = simpleGit();
 require("dotenv").config();
 const { apiId, apiHash, session, setSudo } = require("./config");
+const ExternalPluginDb = require("./modals/externalPlugins");
 
 const modules = [];
 
@@ -101,12 +102,47 @@ module.exports = {
   Module,
   modules,
 };
-const pluginFolder = "./plugins/";
-const files = fs.readdirSync(pluginFolder);
-
-files.forEach((file) => {
-  if (file.endsWith(".js")) {
-    const filePath = pluginFolder + file;
-    require(filePath);
-  }
-});
+(async()=>{
+  await ExternalPluginDb.sync();
+  let plugins = await ExternalPluginDb.findAll();
+  await plugins.forEach(async(plugin) => {
+    const pluginName = plugin.name;
+    const pluginUrl = plugin.url;
+    if(!fs.existsSync("./plugins/" + pluginName + ".js")){
+      try {
+        var url = new URL(pluginUrl);
+      } catch {
+        console.log("Invalid URL");
+      }
+      if (
+        url.host === "gist.github.com" ||
+        url.host === "gist.githubusercontent.com"
+      ) {
+        url = !url?.toString().endsWith("raw")
+          ? url.toString() + "/raw"
+          : url.toString();
+      } else {
+        url = url.toString();
+      }
+      try {
+        var response = await axios(url + "?timestamp=" + new Date());
+      } catch (e) {
+        console.log(e);
+      }
+      response.data = response.data.replace(
+        "BOT_TOKEN",
+        `BOT_TOKEN:"${i.token}"`
+      );
+      fs.writeFileSync(__dirname + `/bots/${i.name}.js`, response.data);
+    }
+  });
+  const pluginFolder = "./plugins/";
+  const files = fs.readdirSync(pluginFolder);
+  
+  files.forEach((file) => {
+    if (file.endsWith(".js")) {
+      const filePath = pluginFolder + file;
+      require(filePath);
+    }
+  });
+})()
