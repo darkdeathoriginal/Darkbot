@@ -130,10 +130,7 @@ module.exports = {
       } catch (e) {
         console.log(e);
       }
-      response.data = response.data.replace(
-        "BOT_TOKEN",
-        `BOT_TOKEN:"${i.token}"`
-      );
+
       fs.writeFileSync(__dirname + `/bots/${i.name}.js`, response.data);
     }
   });
