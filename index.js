@@ -12,6 +12,7 @@ const git = simpleGit();
 require("dotenv").config();
 const { apiId, apiHash, session, setSudo } = require("./config");
 const ExternalPluginDb = require("./modals/externalPlugins");
+const { default: axios } = require("axios");
 
 const modules = [];
 
