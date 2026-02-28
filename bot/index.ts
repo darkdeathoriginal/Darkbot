@@ -14,31 +14,32 @@ const axios = require("axios");
       } catch {
         console.log("Invalid URL");
       }
+      let urlStr = "";
       if (
         url.host === "gist.github.com" ||
         url.host === "gist.githubusercontent.com"
       ) {
-        url = !url?.toString().endsWith("raw")
+        urlStr = !url?.toString().endsWith("raw")
           ? url.toString() + "/raw"
           : url.toString();
       } else {
-        url = url.toString();
+        urlStr = url.toString();
       }
       try {
-        var response = await axios(url + "?timestamp=" + new Date());
+        var response = await axios(urlStr + "?timestamp=" + new Date());
       } catch (e) {
         console.log(e);
       }
       response.data = response.data.replace(
         "BOT_TOKEN",
-        `BOT_TOKEN:"${i.token}"`
+        `BOT_TOKEN:"${i.token}"`,
       );
       fs.writeFileSync(__dirname + `/bots/${i.name}.js`, response.data);
     }
   }
   const files = fs.readdirSync(botFolder);
   files.forEach((file) => {
-    if (file.endsWith(".js")) {
+    if (file.endsWith(".ts") || file.endsWith(".js")) {
       const filePath = "./bots/" + file;
       require(filePath);
     }

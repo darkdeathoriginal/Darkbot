@@ -1,3 +1,4 @@
+let globalYtdlStore: any = {};
 const { Module } = require("../index");
 const fs = require("fs");
 const ytdl = require("@distube/ytdl-core");
@@ -25,11 +26,11 @@ Module(
     }
 
     text += "\nReply with the number to download.";
-    this.ytdl = this.ytdl || {};
-    this.ytdl[m.jid] = { data };
+    globalYtdlStore = globalYtdlStore || {};
+    globalYtdlStore[m.jid] = { data };
 
     let a = await m.send(text);
-    this.ytdl[m.jid].id = a.id;
+    globalYtdlStore[m.jid].id = a.id;
   }
 );
 
@@ -40,12 +41,12 @@ Module(
   },
   async (m, match) => {
     const quoted = await m.getQuoted();
-    if (!quoted || !this.ytdl || this.ytdl[m.jid]?.id != quoted.id) return;
+    if (!quoted || !globalYtdlStore || globalYtdlStore[m.jid]?.id != quoted.id) return;
 
     let no = /\d+/.test(m.message) ? m.message.match(/\d+/)[0] : null;
     if (!no) throw "_Reply must be a number_";
 
-    let data = this.ytdl[m.jid].data[no];
+    let data = globalYtdlStore[m.jid].data[no];
     let url = data.url;
     let info = await ytdl.getInfo(url);
 
@@ -100,3 +101,4 @@ Module(
     }
   }
 );
+

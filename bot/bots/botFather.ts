@@ -8,7 +8,7 @@ const ExternalBotDb = require("../../modals/externalBot");
 const { ButtonBuilder } = require("../utils/buttonBuilder");
 const { Button } = require("telegram/tl/custom/button");
 
-let state = false;
+let state: boolean | string = false;
 let token;
 let timeout;
 botHandler({
@@ -38,7 +38,7 @@ botHandler({
         const button = new ButtonBuilder();
         for (let bot of bots) {
           button.add(
-            Button.inline(bot.name, Buffer.from("updateBot-" + bot.name))
+            Button.inline(bot.name, Buffer.from("updateBot-" + bot.name)),
           );
         }
         await m.client.sendMessage(m.jid, {
@@ -70,18 +70,19 @@ botHandler({
             } catch {
               return await m.send("invalid url");
             }
+            let urlStr = "";
             if (
               url.host === "gist.github.com" ||
               url.host === "gist.githubusercontent.com"
             ) {
-              url = !url?.toString().endsWith("raw")
+              urlStr = !url?.toString().endsWith("raw")
                 ? url.toString() + "/raw"
                 : url.toString();
             } else {
-              url = url.toString();
+              urlStr = url.toString();
             }
             try {
-              var response = await axios(url + "?timestamp=" + new Date());
+              var response = await axios(urlStr + "?timestamp=" + new Date());
             } catch {
               return await m.send("invalid url");
             }
@@ -90,41 +91,42 @@ botHandler({
               ? response.data
                   .match(/name: ["'](.*)["'],/g)
                   ?.map((e) =>
-                    e.replace("pattern", "").replace(/[^a-zA-Z]/g, "")
+                    e.replace("pattern", "").replace(/[^a-zA-Z]/g, ""),
                   )
               : "temp";
+            let plugin_name_str;
             try {
-              plugin_name = plugin_name[1].split(" ")[0];
+              plugin_name_str = plugin_name[1].split(" ")[0];
             } catch {
               return await m.send("_Invalid plugin. No plugin name found!_");
             }
             response.data = response.data.replace(
               "BOT_TOKEN",
-              `BOT_TOKEN:"${token}"`
+              `BOT_TOKEN:"${token}"`,
             );
             fs.writeFileSync(
-              __dirname + "/" + plugin_name + ".js",
-              response.data
+              __dirname + "/" + plugin_name_str + ".js",
+              response.data,
             );
             plugin_name_temp =
               plugin_name_temp.length > 1
                 ? plugin_name_temp.join(", ")
-                : plugin_name;
+                : plugin_name_str;
             try {
-              require("./" + plugin_name);
+              require("./" + plugin_name_str);
               for (let i of bots) {
-                if (i.name == plugin_name) {
+                if (i.name == plugin_name_str) {
                   await i.init();
                 }
               }
             } catch (e) {
-              fs.unlinkSync(__dirname + "/" + plugin_name + ".js");
+              fs.unlinkSync(__dirname + "/" + plugin_name_str + ".js");
               return await m.send("Error in plugin\n" + e);
             }
-            await m.send(plugin_name + " installed.");
+            await m.send(plugin_name_str + " installed.");
             await ExternalBotDb.create({
-              url: url,
-              name: plugin_name,
+              url: urlStr,
+              name: plugin_name_str,
               token,
             });
           }
@@ -143,7 +145,7 @@ botHandler({
         const button = new ButtonBuilder();
         for (let bot of bots) {
           button.add(
-            Button.inline(bot.name, Buffer.from("removebot-" + bot.name))
+            Button.inline(bot.name, Buffer.from("removebot-" + bot.name)),
           );
         }
         await m.client.sendMessage(m.jid, {
@@ -161,7 +163,7 @@ botHandler({
           const util = require("util");
           try {
             let return_val = await eval(
-              `(async () => { ${text.replace("<", "")} })()`
+              `(async () => { ${text.replace("<", "")} })()`,
             );
             if (return_val && typeof return_val !== "string")
               return_val = util.inspect(return_val);
@@ -205,7 +207,7 @@ botHandler({
           }
           return;
         }
-        if(m.query.startsWith("updateBot-")){
+        if (m.query.startsWith("updateBot-")) {
           await m.answer();
           const name = m.query.split("-")[1];
           await ExternalBotDb.sync();

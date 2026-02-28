@@ -80,18 +80,16 @@ async function processImage(imagePath, doc, isLarge) {
       const metadata = await sharp(imagePath)
         .toFormat("jpeg", { quality: 80, mozjpeg: true })
         .toFile(newPath);
-      
+
       doc.addPage({ size: [metadata.width, metadata.height] });
       doc.image(newPath, 0, 0);
-      
+
       await fs.promises.unlink(newPath).catch(console.error);
     } else {
       throw error;
     }
   }
 }
-
-
 
 async function dl(url, path = false, options) {
   const retries = 5;
@@ -100,9 +98,9 @@ async function dl(url, path = false, options) {
   for (let i = 0; i < retries; i++) {
     try {
       const response = await axios({
-        method: 'get',
+        method: "get",
         url: url,
-        responseType: 'stream',
+        responseType: "stream",
         timeout: 60000,
         ...options,
       });
@@ -111,37 +109,36 @@ async function dl(url, path = false, options) {
         return new Promise((resolve, reject) => {
           const writer = fs.createWriteStream(path);
           response.data.pipe(writer);
-          writer.on('finish', () => resolve(path));
-          writer.on('error', reject);
+          writer.on("finish", () => resolve(path));
+          writer.on("error", reject);
         });
       } else {
         return new Promise((resolve, reject) => {
           const chunks = [];
           let totalLength = 0;
-          response.data.on('data', (chunk) => {
+          response.data.on("data", (chunk) => {
             chunks.push(chunk);
             totalLength += chunk.length;
           });
-          response.data.on('end', () => {
+          response.data.on("end", () => {
             const buffer = Buffer.concat(chunks, totalLength);
             resolve(buffer);
           });
-          response.data.on('error', reject);
+          response.data.on("error", reject);
         });
       }
     } catch (error) {
       console.error(`Error downloading: ${url}`);
       if (i < retries - 1) {
         console.log(`Retrying... (attempts left: ${retries - i - 1})`);
-        await new Promise(r => setTimeout(r, retryDelay));
+        await new Promise((r) => setTimeout(r, retryDelay));
       } else {
-        console.error('Exceeded maximum retries. Giving up.');
+        console.error("Exceeded maximum retries. Giving up.");
         throw error;
       }
     }
   }
 }
-
 
 function compressText(text) {
   const originalBuffer = Buffer.from(text);
@@ -161,6 +158,8 @@ function decompressText(buffer) {
   }
 }
 class Mutex {
+  locked: boolean;
+  waitingList: any[];
   constructor() {
     this.locked = false;
     this.waitingList = [];
@@ -183,7 +182,11 @@ class Mutex {
   }
 }
 class Semaphore {
-  constructor(initialCount) {
+  count: number;
+  waitingList: any[];
+  lock: Mutex;
+  positionChangeCallbacks: any[];
+  constructor(initialCount: number) {
     this.count = initialCount;
     this.waitingList = [];
     this.lock = new Mutex();

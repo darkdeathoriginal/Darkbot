@@ -1,3 +1,5 @@
+import { sleep } from "telegram/Helpers";
+
 const { utils, Api, errors } = require("telegram");
 const {
   readBigIntFromBuffer,
@@ -13,6 +15,7 @@ const { getCommentData } = require("telegram/client/messages");
 const { CustomFile } = require("telegram/client/uploads");
 const bigInt = require("big-integer");
 const fs = require("fs/promises");
+const path = require("path");
 const { Buffer } = require("buffer");
 const { isBuffer } = Buffer;
 
@@ -25,10 +28,11 @@ const BUFFER_SIZE_100MB = 100 * 1024 * 1024;
 const BUFFER_SIZE_20MB = 20 * 1024 * 1024;
 
 class CustomBuffer {
+  options: any;
   constructor(options) {
     if (!options.buffer && !options.filePath) {
       throw new Error(
-        "Either one of `buffer` or `filePath` should be specified"
+        "Either one of `buffer` or `filePath` should be specified",
       );
     }
     this.options = options;
@@ -53,8 +57,8 @@ class CustomBuffer {
   }
 }
 
-async function getFileBuffer(file, fileSize, maxBufferSize) {
-  const options = {};
+async function getFileBuffer(file: any, fileSize: any, maxBufferSize: any) {
+  const options: any = {};
   if (fileSize > maxBufferSize && file instanceof CustomFile) {
     options.filePath = file.path;
   } else {
@@ -89,11 +93,11 @@ async function uploadFile(client, fileParams) {
   if (onProgress) {
     onProgress(progress);
   }
-  
+
   const buffer = await getFileBuffer(
     file,
     size,
-    fileParams.maxBufferSize || BUFFER_SIZE_20MB - 1
+    fileParams.maxBufferSize || BUFFER_SIZE_20MB - 1,
   );
   for (let i = 0; i < partCount; i += workers) {
     const sendingParts = [];
@@ -124,7 +128,7 @@ async function uploadFile(client, fileParams) {
                       fileId,
                       filePart: jMemo,
                       bytes: bytesMemo,
-                    })
+                    }),
               );
             } catch (err) {
               if (sender && !sender.isConnected()) {
@@ -147,13 +151,12 @@ async function uploadFile(client, fileParams) {
             }
             break;
           }
-        })(j, bytes)
+        })(j, bytes),
       );
     }
 
     await Promise.all(sendingParts);
   }
-
 
   return isLarge
     ? new Api.InputFileBig({
@@ -184,7 +187,7 @@ async function _fileToMedia(
     mimeType,
     asImage,
     workers = 1,
-  }
+  },
 ) {
   if (!file) {
     return { fileHandle: undefined, media: undefined, image: undefined };
@@ -243,7 +246,7 @@ async function _fileToMedia(
       createdFile = new CustomFile(
         path.basename(file),
         (await fs.stat(file)).size,
-        file
+        file,
       );
     } else if (
       (typeof File !== "undefined" && file instanceof File) ||
@@ -276,7 +279,7 @@ async function _fileToMedia(
   if (media != undefined) {
   } else if (fileHandle == undefined) {
     throw new Error(
-      `Failed to convert ${file} to media. Not an existing file or an HTTP URL`
+      `Failed to convert ${file} to media. Not an existing file or an HTTP URL`,
     );
   } else if (asImage) {
     media = new Api.InputMediaUploadedPhoto({
@@ -305,7 +308,7 @@ async function _fileToMedia(
         uploadedThumb = new CustomFile(
           path.basename(thumb),
           (await fs.stat(thumb)).size,
-          thumb
+          thumb,
         );
       } else if (typeof File !== "undefined" && thumb instanceof File) {
         uploadedThumb = thumb;
@@ -367,7 +370,7 @@ async function _sendAlbum(
     noforwards,
     commentTo,
     topMsgId,
-  }
+  },
 ) {
   entity = await client.getInputEntity(entity);
   let files = [];
@@ -412,7 +415,7 @@ async function _sendAlbum(
       videoNote: videoNote,
       supportsStreaming: supportsStreaming,
       workers: workers,
-    });
+    } as any);
     index++;
     if (
       media instanceof Api.InputMediaUploadedPhoto ||
@@ -422,7 +425,7 @@ async function _sendAlbum(
         new Api.messages.UploadMedia({
           peer: entity,
           media,
-        })
+        }),
       );
       if (r instanceof Api.MessageMediaPhoto) {
         media = getInputMedia(r.photo);
@@ -432,7 +435,7 @@ async function _sendAlbum(
         new Api.messages.UploadMedia({
           peer: entity,
           media,
-        })
+        }),
       );
       if (r instanceof Api.MessageMediaDocument) {
         media = getInputMedia(r.document);
@@ -448,7 +451,7 @@ async function _sendAlbum(
         media: media,
         message: text,
         entities: msgEntities,
-      })
+      }),
     );
   }
   let replyObject = undefined;
@@ -468,7 +471,7 @@ async function _sendAlbum(
       scheduleDate: scheduleDate,
       clearDraft: clearDraft,
       noforwards: noforwards,
-    })
+    }),
   );
   const randomIds = albumFiles.map((m) => m.randomId);
   return client._getResponseMessage(randomIds, result, entity);
@@ -499,7 +502,7 @@ async function sendFile(
     noforwards,
     commentTo,
     topMsgId,
-  }
+  },
 ) {
   if (!file) {
     throw new Error("You need to specify a file");
@@ -529,7 +532,7 @@ async function sendFile(
       forceDocument: forceDocument,
       noforwards: noforwards,
       topMsgId: topMsgId,
-    });
+    } as any);
   }
   if (Array.isArray(caption)) {
     caption = caption[0] || "";
@@ -541,7 +544,7 @@ async function sendFile(
     [caption, msgEntities] = await _parseMessageText(
       client,
       caption,
-      parseMode
+      parseMode,
     );
   }
 
@@ -557,7 +560,7 @@ async function sendFile(
     videoNote: videoNote,
     supportsStreaming: supportsStreaming,
     workers: workers,
-  });
+  } as any);
   if (media == undefined) {
     throw new Error(`Cannot use ${file} as file.`);
   }

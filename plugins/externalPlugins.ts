@@ -22,18 +22,19 @@ Module(
       } catch {
         return await message.send("invalid url");
       }
+      let urlStr = "";
       if (
         url.host === "gist.github.com" ||
         url.host === "gist.githubusercontent.com"
       ) {
-        url = !url?.toString().endsWith("raw")
+        urlStr = !url?.toString().endsWith("raw")
           ? url.toString() + "/raw"
           : url.toString();
       } else {
-        url = url.toString();
+        urlStr = url.toString();
       }
       try {
-        var response = await axios(url + "?timestamp=" + new Date());
+        var response = await axios(urlStr + "?timestamp=" + new Date());
       } catch {
         return await message.send("invalid url");
       }
@@ -43,16 +44,17 @@ Module(
             .match(/pattern: ["'](.*?)["'],/g)
             .map((e) => e.replace("pattern", "").replace(/[^a-zA-Z]/g, ""))
         : "temp";
+      let plugin_name_str;
       try {
-        plugin_name = plugin_name[1].split(" ")[0];
+        plugin_name_str = plugin_name[1].split(" ")[0];
       } catch {
-        return await message.sendReply(
-          "_Invalid plugin. No plugin name found!_"
-        );
+        return await message.send("_Invalid plugin. No plugin name found!_");
       }
-      fs.writeFileSync("./plugins/" + plugin_name + ".js", response.data);
+      fs.writeFileSync("./plugins/" + plugin_name_str + ".js", response.data);
       plugin_name_temp =
-        plugin_name_temp.length > 1 ? plugin_name_temp.join(", ") : plugin_name;
+        plugin_name_temp.length > 1
+          ? plugin_name_temp.join(", ")
+          : plugin_name_str;
       try {
         require("./" + plugin_name);
       } catch (e) {
@@ -65,7 +67,7 @@ Module(
         name: plugin_name,
       });
     }
-  }
+  },
 );
 
 Module(
@@ -80,11 +82,11 @@ Module(
     var plugins = await ExternalPluginDb.findAll();
     if (match[1] !== "") {
       var plugin = plugins.filter(
-        (_plugin) => _plugin.dataValues.name === match[1]
+        (_plugin) => _plugin.dataValues.name === match[1],
       );
       try {
         await message.send(
-          `_${plugin[0].dataValues.name}:_ ${plugin[0].dataValues.url}`
+          `_${plugin[0].dataValues.name}:_ ${plugin[0].dataValues.url}`,
         );
       } catch {
         return await message.send("plugin not found");
@@ -108,7 +110,7 @@ Module(
       });
       return await message.send(msg);
     }
-  }
+  },
 );
 
 Module(
@@ -135,5 +137,5 @@ Module(
       delete require.cache[require.resolve("./" + match[1] + ".js")];
       fs.unlinkSync("./plugins/" + match[1] + ".js");
     }
-  }
+  },
 );

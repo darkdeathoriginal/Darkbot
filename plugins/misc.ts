@@ -1,3 +1,4 @@
+let globalScrambledStore: any = {};
 const { Module, modules } = require("../index");
 const { TelegramClient, Api } = require("telegram");
 const { CustomFile } = require("telegram/client/uploads");
@@ -19,12 +20,12 @@ Module(
     }
     const quoted = await m.getQuoted();
     const photos = await m.client.getUserProfilePhotos(quoted.userId);
-    for(let photo of photos){
+    for (let photo of photos) {
       await m.client.sendMessage(m.jid, {
-        file:photo,
-    })
+        file: photo,
+      });
     }
-  }
+  },
 );
 Module(
   {
@@ -36,7 +37,7 @@ Module(
   async (m, match) => {
     // Handle start command logic here
     process.exit(0);
-  }
+  },
 );
 Module(
   {
@@ -47,14 +48,14 @@ Module(
   },
   async (m, match) => {
     // Handle start command logic here
-    text = "";
+    let text = "";
     for (let i of modules) {
-      if (i.pattern&&i.pattern != "message") {
+      if (i.pattern && i.pattern != "message") {
         text += i.pattern.split(" ?(.*)")[0] + "\n" + i.desc + "\n\n";
       }
     }
-    await m.edit({text:FancyRandom(text)});
-  }
+    await m.edit({ text: FancyRandom(text) });
+  },
 );
 
 Module(
@@ -77,7 +78,7 @@ Module(
         await fs.writeFileSync("./temp/temp.mp4", buffer);
       }
     }
-  }
+  },
 );
 Module(
   {
@@ -104,18 +105,21 @@ Module(
         await m.client.send("me", { video: buffer });
       }
     }
-  }
+  },
 );
 Module(
   { pattern: "scrambled ?(.*)", fromMe: false, desc: "game", use: "utility" },
   async (m, match) => {
-    this.scrambled = this.scrambled ? this.scrambled : {};
-    this.scrambled[m.jid] = this.scrambled[m.jid] ? this.scrambled[m.jid] : {};
-
+    globalScrambledStore = globalScrambledStore
+      ? globalScrambledStore
+      : {};
+    globalScrambledStore[m.jid] = globalScrambledStore[m.jid]
+      ? globalScrambledStore[m.jid]
+      : {};
     const a = (await axios(`https://fruityvice.com/api/fruit/all`)).data;
     let n = Math.floor(Math.random() * a.length);
     const word = a[n].name.toLowerCase();
-    this.scrambled[m.jid].currentWord = word;
+    globalScrambledStore[m.jid].currentWord = word;
     const currentScrambledWord = word
       .split("")
       .sort(() => Math.random() - 0.5)
@@ -125,25 +129,25 @@ Module(
       text: `Guess the word: ${currentScrambledWord}`,
     });
 
-    this.scrambled[m.jid].state = true;
-    this.scrambled[m.jid].id = m.jid;
-  }
+    globalScrambledStore[m.jid].state = true;
+    globalScrambledStore[m.jid].id = m.jid;
+  },
 );
 Module(
   { on: "message", fromMe: true, desc: "Start command", use: "utility" },
   async (m, match) => {
     if (
-      this.scrambled &&
-      this.scrambled[m.jid].id === m.jid &&
-      m.message.toLowerCase() === this.scrambled[m.jid].currentWord
+      globalScrambledStore &&
+      globalScrambledStore[m.jid]?.id === m.jid &&
+      m.message.toLowerCase() === globalScrambledStore[m.jid]?.currentWord
     ) {
       console.log("test");
       await m.client.send(m.jid, {
         text: `you win`,
       });
-      this.scrambled[m.jid].state = false;
+      globalScrambledStore[m.jid].state = false;
     }
-  }
+  },
 );
 Module(
   { on: "message", fromMe: true, desc: "Start command", use: "utility" },
@@ -153,7 +157,7 @@ Module(
       const util = require("util");
       try {
         let return_val = await eval(
-          `(async () => { ${text.replace(">", "")} })()`
+          `(async () => { ${text.replace(">", "")} })()`,
         );
         if (return_val && typeof return_val !== "string")
           return_val = util.inspect(return_val);
@@ -168,5 +172,6 @@ Module(
         });
       }
     }
-  }
+  },
 );
+

@@ -1,6 +1,6 @@
 const Base = require("./Base");
-
-// const Image = require('./Image');
+const Message = require("./Message");
+declare var MessageType: any, Presence: any;
 
 class ReplyMessage extends Base {
   constructor(client, data) {
@@ -88,7 +88,7 @@ class ReplyMessage extends Base {
       this.jid,
       text,
       MessageType.text,
-      { quoted: this.data }
+      { quoted: this.data },
     );
 
     return new Message(this.client, message);
@@ -106,7 +106,7 @@ class ReplyMessage extends Base {
     if (this.image) {
       await this.client.downloadAndSaveMediaMessage(
         this.data.quotedMessage.imageMessage,
-        location
+        location,
       );
 
       return this.id + "." + this.mimetype.split("/")[1];

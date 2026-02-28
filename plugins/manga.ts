@@ -1,8 +1,11 @@
+import { data } from "cheerio/lib/api/attributes";
+
 const { Module } = require("../index");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const fs = require("fs");
-let deleteMessage
+let deleteMessage;
+let globalMangaStore: any = {};
 Module(
   {
     pattern: "manga ?(.*)",
@@ -33,7 +36,7 @@ Module(
           });
         });
 
-        this.manga = this.manga ? this.manga : {};
+        globalMangaStore = globalMangaStore ? globalMangaStore : {};
         let data = {};
         let text = "**Manga result**\n\n";
         let n = 1;
@@ -45,15 +48,15 @@ Module(
         }
 
         text += "\nReply with the number to download notes.";
-        this.manga[m.jid] = {};
-        this.manga[m.jid].data = data;
+        globalMangaStore[m.jid] = {};
+        globalMangaStore[m.jid].data = data;
         let a = await m.send(text);
-        this.manga[m.jid].key = a;
-        this.manga[m.jid].state = "manga";
+        globalMangaStore[m.jid].key = a;
+        globalMangaStore[m.jid].state = "manga";
         return;
       })
       .catch((err) => console.log(err));
-  }
+  },
 );
 
 Module(
@@ -62,42 +65,42 @@ Module(
     fromMe: true,
   },
   async (m, match) => {
-    if(!m.quoted)return
+    if (!m.quoted) return;
     const quoted = await m.getQuoted();
-    if (!this.manga || this.manga[m.jid]?.key.id != quoted?.id)
+    if (!globalMangaStore || globalMangaStore[m.jid]?.key.id != quoted?.id)
       return;
     var no = /\d+/.test(m.message) ? m.message.match(/\d+/)[0] : false;
     if (!no) throw "_Reply must be  a number_";
-    m.delete()
-    let manga = this.manga[m.jid];
+    m.delete();
+    let manga = globalMangaStore[m.jid];
     if (no != 0 && !manga.data[no]) return await m.send("invalid number");
     if (no == 0) {
-      article = manga.next;
-      this.manga = this.manga ? this.manga : {};
+      let article = manga.next;
+      globalMangaStore = globalMangaStore ? globalMangaStore : {};
       let data = {};
       let text = "**" + manga.title + "**\n\n";
       let n = 1;
       let array = article.slice(
         0,
-        article.length < 20 ? article.length - 1 : 20
+        article.length < 20 ? article.length - 1 : 20,
       );
       for (let i of array) {
         data[n] = { url: i.lin, title: i.title };
         text += n + ", **" + i.title + "**\n";
         n++;
       }
-      this.manga[m.jid] = {};
+      globalMangaStore[m.jid] = {};
       if (article.length > 20) {
         text += "0, **More**\n";
-        this.manga[m.jid].next = article.slice(19, article.length - 1);
-        this.manga[m.jid].title = manga.title;
+        globalMangaStore[m.jid].next = article.slice(19, article.length - 1);
+        globalMangaStore[m.jid].title = manga.title;
       }
       text += "\nReply with the number to download notes.";
 
-      this.manga[m.jid].data = data;
+      globalMangaStore[m.jid].data = data;
       let a = await m.send(text);
-      this.manga[m.jid].key = a;
-      this.manga[m.jid].state = "chapter";
+      globalMangaStore[m.jid].key = a;
+      globalMangaStore[m.jid].state = "chapter";
       return;
     }
     if (manga.state == "manga") {
@@ -116,31 +119,31 @@ Module(
             lin,
           });
         });
-        this.manga = this.manga ? this.manga : {};
+        globalMangaStore = globalMangaStore ? globalMangaStore : {};
         let data = {};
         let text = "" + manga.data[no].title + "\n\n";
         let n = 1;
         let array = article.slice(
           0,
-          article.length < 20 ? article.length - 1 : 20
+          article.length < 20 ? article.length - 1 : 20,
         );
         for (let i of array) {
           data[n] = { url: i.lin, title: i.title };
           text += n + ", " + i.title + "\n";
           n++;
         }
-        this.manga[m.jid] = {};
+        globalMangaStore[m.jid] = {};
         if (article.length > 20) {
           text += "0, More\n";
-          this.manga[m.jid].next = article.slice(19, article.length - 1);
-          this.manga[m.jid].title = manga.data[no].title;
+          globalMangaStore[m.jid].next = article.slice(19, article.length - 1);
+          globalMangaStore[m.jid].title = manga.data[no].title;
         }
         text += "\nReply with the number to download notes.";
 
-        this.manga[m.jid].data = data;
+        globalMangaStore[m.jid].data = data;
         await m.edit(text, manga.key.id);
-        this.manga[m.jid].key = manga.key;
-        this.manga[m.jid].state = "chapter";
+        globalMangaStore[m.jid].key = manga.key;
+        globalMangaStore[m.jid].state = "chapter";
         return;
       });
     }
@@ -167,11 +170,11 @@ Module(
         await new Promise((resolve) => setTimeout(resolve, 2000));
       });
     }
-  }
+  },
 );
 
-function dl(text, ttt) {
-  return new Promise((resolve, reject) => {
+function dl(text: any, ttt: any) {
+  return new Promise<void>((resolve, reject) => {
     if (!fs.existsSync("./temp/pdf")) {
       fs.mkdirSync("./temp/pdf");
     }
