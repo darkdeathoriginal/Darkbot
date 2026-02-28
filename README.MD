@@ -1,15 +1,12 @@
-
 # Darkbot
 
 A simple Telegram User/Bot built using Gramjs.
-
 
 ## Features
 
 - Can run both user and bot accounts
 - External plugin support
 - External Bot support
-
 
 ## Run Locally
 
@@ -30,6 +27,7 @@ Install dependencies
 ```bash
   npm install
 ```
+
 Setup Environment Variables
 
 `API_ID`
@@ -38,20 +36,20 @@ Setup Environment Variables
 
 `BOT_TOKEN`
 
-`DATABASE_URL` (Postgress/optional)
+`DATABASE_URL` (Postgres/optional)
 
-Setup account
+Start BOT in Development (TypeScript)
 
 ```bash
-  node .
+  npm run dev
 ```
 
-Start BOT
+Build and Start BOT (Production)
 
 ```bash
+  npm run build
   npm start
 ```
-
 
 ## Usage/Examples
 
@@ -60,5 +58,3 @@ Type `.list` to get list of all user command.
 `.install <gist-url>` can install external plugins,
 
 For external bot run `/addbot` in your bot . [Sample bot](https://gist.github.com/darkdeathoriginal/57995db444bdcafd004887a7de82e9c6)
-
-
